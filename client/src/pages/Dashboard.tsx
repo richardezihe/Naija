@@ -9,6 +9,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { getQueryFn } from "@/lib/queryClient";
 
 interface User {
   id: number;
@@ -26,6 +27,7 @@ export default function Dashboard() {
   // Fetch all users from the API
   const { data: users, isLoading } = useQuery<User[]>({
     queryKey: ['/api/users'],
+    queryFn: getQueryFn<User[]>({ on401: "throw" }),
   });
 
   if (isLoading) {

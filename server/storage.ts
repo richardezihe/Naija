@@ -56,8 +56,9 @@ export class MemStorage implements IStorage {
         totalEarnings: 2000,
         totalReferrals: 2,
         referralCode: "Ani68xfC",
+        referredBy: null,
         isActive: true,
-        joinedAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString() // 30 days ago
+        joinedAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
       },
       {
         id: this.currentUserId++,
@@ -67,8 +68,9 @@ export class MemStorage implements IStorage {
         totalEarnings: 5000,
         totalReferrals: 5,
         referralCode: "Joh43xTr",
+        referredBy: null,
         isActive: true,
-        joinedAt: new Date(Date.now() - 20 * 24 * 60 * 60 * 1000).toISOString() // 20 days ago
+        joinedAt: new Date(Date.now() - 20 * 24 * 60 * 60 * 1000)
       },
       {
         id: this.currentUserId++,
@@ -78,8 +80,9 @@ export class MemStorage implements IStorage {
         totalEarnings: 3000,
         totalReferrals: 3,
         referralCode: "Ali92qWe",
+        referredBy: null,
         isActive: true,
-        joinedAt: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString() // 15 days ago
+        joinedAt: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000)
       },
       {
         id: this.currentUserId++,
@@ -89,8 +92,9 @@ export class MemStorage implements IStorage {
         totalEarnings: 1000,
         totalReferrals: 1,
         referralCode: "Bob76zPo",
+        referredBy: null,
         isActive: true,
-        joinedAt: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString() // 10 days ago
+        joinedAt: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000)
       },
       {
         id: this.currentUserId++,
@@ -100,8 +104,9 @@ export class MemStorage implements IStorage {
         totalEarnings: 0,
         totalReferrals: 0,
         referralCode: "Sar38vBn",
+        referredBy: null,
         isActive: true,
-        joinedAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString() // 5 days ago
+        joinedAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000)
       }
     ];
     
