@@ -60,7 +60,7 @@ export default function BotDemo() {
     // Process commands
     let botResponse: BotMessage | null = null;
     
-    if (text === '/help' || text === 'Help') {
+    if (text === '/help' || text === 'Help' || text === '❓ Help') {
       botResponse = {
         id: messages.length + 2,
         type: 'bot',
@@ -71,7 +71,7 @@ export default function BotDemo() {
             [{ text: '💰 Balance', data: '/balance' }, { text: '💳 Withdraw', data: '/withdraw' }],
             [{ text: '🔗 Invite Friends', data: '/refer' }, { text: '📊 Stats', data: '/stats' }],
             [{ text: '💵 Payment Info', data: '/payment_info' }, { text: '💳 Payment Method', data: '/payment_method' }],
-            [{ text: '📝 Withdrawal Request', data: '/withdrawal_request' }]
+            [{ text: '📝 Withdrawal Request', data: '/withdrawal_request' }, { text: '/Earn bonus', data: '/earn_bonus' }]
           ]
         },
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
@@ -288,7 +288,8 @@ We advise you to keep tapping and inviting friends to earn more cash.`,
     { text: '/help', display: '/help' },
     { text: '/payment_info', display: '/payment_info' },
     { text: '/payment_method', display: '/payment_method' },
-    { text: '/withdrawal_request', display: '/withdrawal_request' }
+    { text: '/withdrawal_request', display: '/withdrawal_request' },
+    { text: '/earn_bonus', display: '/Earn bonus' }
   ];
 
   if (userLoading || messagesLoading) {
