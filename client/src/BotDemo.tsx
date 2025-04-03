@@ -102,12 +102,12 @@ export default function BotDemo() {
         type: 'bot',
         content: {
           type: 'text',
-          message: '📋 Available Commands:\n\n/start - Start or restart the bot\n/balance - Check your current balance\n/stats - View your referral statistics\n/refer - Get your referral link\n/withdraw [amount] - Request a withdrawal (weekends only)\n/payment_info - View payment methods and info\n/payment_method - View account details for payments\n/withdrawal_request - Submit a withdrawal request\n/earn_bonus - Earn 100 naira bonus (available every minute)\n/help - Show this help message',
+          message: '📋 Available Commands:\n\n/start - Start or restart the bot\n/balance - Check your current balance\n/stats - View your referral statistics\n/refer - Get your referral link\n/withdraw [amount] - Request a withdrawal (weekends only)\n/payment_info - View payment methods and info\n/payment_method - View account details for payments\n/withdrawal_request - Submit a withdrawal request\n/bonus - Earn 100 naira bonus (available every minute)\n/help - Show this help message',
           buttons: [
             [{ text: '💰 Balance', data: '/balance' }, { text: '💳 Withdraw', data: '/withdraw' }],
             [{ text: '🔗 Invite Friends', data: '/refer' }, { text: '📊 Stats', data: '/stats' }],
             [{ text: '💵 Payment Info', data: '/payment_info' }, { text: '💳 Payment Method', data: '/payment_method' }],
-            [{ text: '📝 Withdrawal Request', data: '/withdrawal_request' }, { text: '/Earn bonus', data: '/earn_bonus' }]
+            [{ text: '📝 Withdrawal Request', data: '/withdrawal_request' }, { text: '🎁 Bonus', data: '/bonus' }]
           ]
         },
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
@@ -235,7 +235,7 @@ export default function BotDemo() {
         },
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       };
-    } else if (text === '/earn_bonus' || text === '/Earn bonus') {
+    } else if (text === '/bonus' || text === '🎁 Bonus') {
       // Update balance state - add 100 naira to current balance
       const newBalance = currentBalance + 100;
       const newEarnings = currentEarnings + 100;
@@ -308,7 +308,7 @@ To qualify for the next withdrawal, make sure to invite 10 friends or more.
 We advise you to keep tapping and inviting friends to earn more cash.`,
             buttons: [
               [{ text: '💰 Check Balance', data: '/balance' }],
-              [{ text: '/Earn bonus', data: '/earn_bonus' }]
+              [{ text: '🎁 Bonus', data: '/bonus' }]
             ]
           },
           timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
@@ -378,7 +378,7 @@ We advise you to keep tapping and inviting friends to earn more cash.`,
     { text: '/payment_info', display: '/payment_info' },
     { text: '/payment_method', display: '/payment_method' },
     { text: '/withdrawal_request', display: '/withdrawal_request' },
-    { text: '/earn_bonus', display: '/Earn bonus' },
+    { text: '/bonus', display: '🎁 Bonus' },
     { text: '/add_referral', display: '/add_referral' } // Added for testing referral milestones
   ];
 
