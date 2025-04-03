@@ -32,7 +32,7 @@ export default function Dashboard() {
 
   if (isLoading) {
     return (
-      <div className="flex h-screen items-center justify-center bg-dark-bg text-white">
+      <div className="flex h-screen items-center justify-center">
         <div className="animate-pulse">Loading dashboard data...</div>
       </div>
     );
@@ -82,7 +82,12 @@ export default function Dashboard() {
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={5} className="text-center">No users found</TableCell>
+                <TableCell colSpan={5} className="text-center py-8">
+                  <div className="flex flex-col items-center justify-center space-y-3">
+                    <p className="text-lg font-medium">No users registered yet</p>
+                    <p className="text-sm text-gray-500">Users will appear here after they start using the bot</p>
+                  </div>
+                </TableCell>
               </TableRow>
             )}
           </TableBody>
