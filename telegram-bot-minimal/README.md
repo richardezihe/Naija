@@ -1,81 +1,91 @@
-# Naija Value Telegram Bot
+# NAIJA VALUE Telegram Bot
 
-A Telegram bot for the Naija Value platform that enables users to earn money through referrals.
+A Telegram-based reward platform that enables users to earn money through referrals.
 
-## Features
+## Deployment Instructions
 
-- User referral tracking
-- Earning rewards (1000 naira per referral)
-- Withdrawal requests
-- Milestone rewards
-- Verification system
+### Option 1: Deploy on Render
 
-## Setup Instructions
+1. Sign up for Render and create a new Web Service
+2. Connect to your GitHub repository
+3. Set environment variables: TELEGRAM_BOT_TOKEN=your_token
+4. Use Node.js environment with build command 'npm install'
+5. Set start command to 'npm start'
+6. Deploy and verify your bot is working
 
-### Prerequisites
-- Node.js (v16+)
-- NPM or Yarn
+### Option 2: Deploy on Railway
 
-### Installation
+1. Sign up for Railway and connect to GitHub
+2. Create a new project from your repository
+3. Set environment variable: TELEGRAM_BOT_TOKEN=your_token
+4. Verify the start command is 'npm start'
+5. Deploy and check your bot is running
 
-1. Clone this repository
-2. Install dependencies:
-   ```
-   npm install
-   ```
+For more detailed instructions, refer to the documentation below:
 
-3. Set up environment variables:
-   Create a `.env` file in the root directory with:
-   ```
-   TELEGRAM_BOT_TOKEN=your_telegram_bot_token
-   PORT=5000 (optional, defaults to 5000)
-   ```
+## Detailed Deployment Guide
 
-4. Start the bot:
-   ```
-   npm start
-   ```
+### Render.com Deployment
 
-### Deployment
+1. **Create a GitHub repository**
+   - Push your code to GitHub
+   - Make sure Procfile is included
 
-#### Option 1: Railway
-1. Create a Railway account
-2. Create a new project and connect it to your GitHub repo
-3. Add environment variables:
-   - TELEGRAM_BOT_TOKEN
+2. **Sign up for Render**
+   - Go to render.com and create an account
+   - Connect with GitHub
 
-#### Option 2: Render
-1. Create a Render account
-2. Create a new Web Service
-3. Connect your GitHub repo
-4. Set build command: `npm install`
-5. Set start command: `npm start`
-6. Add environment variables
+3. **Create a new Web Service**
+   - Select your repository
+   - Choose Node.js environment
+   - Region: Select closest to your users
+   - Branch: main
+   - Build Command: npm install
+   - Start Command: npm start
+   - Plan: Free
 
-#### Option 3: Oracle Cloud Free Tier
-1. Create an Oracle Cloud account and set up a free VM
-2. Clone the repository to your VM
-3. Install dependencies and set environment variables
-4. Use PM2 to keep the bot running:
-   ```
-   npm install -g pm2
-   pm2 start npm --name "naija-value-bot" -- start
-   pm2 startup
-   pm2 save
-   ```
+4. **Set environment variables**
+   - Add TELEGRAM_BOT_TOKEN with your actual token
+   - Add NODE_ENV=production
 
-## Bot Commands
+5. **Deploy**
+   - Click "Create Web Service"
+   - Wait for deployment to complete
 
-- `/start` - Start the bot and register
-- `/balance` - Check your current balance
-- `/stats` - View your referral statistics
-- `/refer` - Get your referral link
-- `/withdraw` - Request a withdrawal
-- `/help` - Display help information
-- `/bonus` - Claim a bonus of 100 naira
-- `/payment_info` - View payment information
-- `/payment_method` - Set payment method
+6. **Keep service active**
+   - Use UptimeRobot to ping your service URL every 10-15 minutes
+   - This prevents the free tier from spinning down
 
-## Contact
+### Railway.app Deployment
 
-For support, join: https://t.me/naijavaluesupport
+1. **Create a GitHub repository**
+   - Push your code to GitHub
+
+2. **Sign up for Railway**
+   - Go to railway.app
+   - Sign up with GitHub
+
+3. **Create a new project**
+   - Click "New Project" 
+   - Select "Deploy from GitHub repo"
+   - Choose your repository
+   - Click "Deploy Now"
+
+4. **Configure environment**
+   - Go to Variables tab
+   - Add TELEGRAM_BOT_TOKEN with your actual token
+
+5. **Verify settings**
+   - Check Settings tab
+   - Start Command should be "npm start"
+   - Root Directory should be "/"
+
+6. **Monitor usage**
+   - Railway gives $5 free credit per month
+   - Check Usage tab to monitor
+
+## Troubleshooting
+
+- **Bot not responding:** Check logs and verify token is correct
+- **Deployment fails:** Check build logs for errors
+- **Service stops:** For Render, set up pinging; for Railway, check usage limits
