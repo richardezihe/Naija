@@ -66,7 +66,7 @@ export default function BotDemo() {
         type: 'bot',
         content: {
           type: 'text',
-          message: '📋 Available Commands:\n\n/start - Start or restart the bot\n/balance - Check your current balance\n/stats - View your referral statistics\n/refer - Get your referral link\n/withdraw [amount] - Request a withdrawal (weekends only)\n/payment_info - View payment methods and info\n/payment_method - View account details for payments\n/withdrawal_request - Submit a withdrawal request\n/help - Show this help message',
+          message: '📋 Available Commands:\n\n/start - Start or restart the bot\n/balance - Check your current balance\n/stats - View your referral statistics\n/refer - Get your referral link\n/withdraw [amount] - Request a withdrawal (weekends only)\n/payment_info - View payment methods and info\n/payment_method - View account details for payments\n/withdrawal_request - Submit a withdrawal request\n/earn_bonus - Earn 100 naira bonus (available every minute)\n/help - Show this help message',
           buttons: [
             [{ text: '💰 Balance', data: '/balance' }, { text: '💳 Withdraw', data: '/withdraw' }],
             [{ text: '🔗 Invite Friends', data: '/refer' }, { text: '📊 Stats', data: '/stats' }],
@@ -195,19 +195,41 @@ export default function BotDemo() {
         },
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       };
+    } else if (text === '/earn_bonus' || text === '/Earn bonus') {
+      botResponse = {
+        id: messages.length + 2,
+        type: 'bot',
+        content: {
+          type: 'success',
+          message: '✅ Bonus Added Successfully!\n\n+₦100 has been added to your balance.\n\nNew Balance: ₦100\n\nYou can earn again in 1 minute.',
+          buttons: [
+            [{ text: '💰 Check Balance', data: '/balance' }],
+            [{ text: '🏠 Return to Menu', data: '/start' }]
+          ]
+        },
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      };
     } else if (text === '/withdrawal_request' || text === '📝 Withdrawal Request') {
       // Check if today is weekend (Saturday or Sunday)
       const today = new Date().getDay();
       const isWeekend = today === 0 || today === 6; // 0 = Sunday, 6 = Saturday
       
       if (isWeekend) {
-        // On weekends, show the withdrawal form
+        // On weekends, request bank details
         botResponse = {
           id: messages.length + 2,
           type: 'bot',
           content: {
             type: 'text',
-            message: '📝 Withdrawal Request Form 📝\n\nPlease send your withdrawal details in this format:\n\n/withdraw [amount]\n[account number]\n[bank name]\n[account name]\n\nExample:\n/withdraw 5000\n1234567890\nOpay\nJohn Doe\n\nNote: Withdrawals are processed within 12-24 hours.',
+            message: `✏️ Now Send Your Correct Bank Details
+Format: ACC NUMBER
+               BANK NAME
+               ACC NAME
+⚠️ This Wallet Will Be Used For Future Withdrawals !!
+
+🏦Your Set Bank Details Is:  ⛔ Not Set
+
+💹 It Will Be Used For All Future Withdrawals.`,
             buttons: [
               [{ text: '💰 Check Balance', data: '/balance' }],
               [{ text: '🏠 Return to Menu', data: '/start' }]
@@ -216,13 +238,22 @@ export default function BotDemo() {
           timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
         };
       } else {
-        // Not weekend, show error
+        // On weekdays, show the withdrawal schedule message
         botResponse = {
           id: messages.length + 2,
           type: 'bot',
           content: {
-            type: 'error',
-            message: '❌ Withdrawals are only processed on weekends (Saturday & Sunday).\n\nPlease check back on weekend!'
+            type: 'text',
+            message: `Hi Ezihe001, 
+🔒Withdrawal opens from 12:00am on Saturdays till 10:00pm on Sunday 
+
+To qualify for the next withdrawal, make sure to invite 10 friends or more.
+
+We advise you to keep tapping and inviting friends to earn more cash.`,
+            buttons: [
+              [{ text: '💰 Check Balance', data: '/balance' }],
+              [{ text: '/Earn bonus', data: '/earn_bonus' }]
+            ]
           },
           timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
         };

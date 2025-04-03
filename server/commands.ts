@@ -25,6 +25,8 @@ export async function processCommand(command: BotCommand, user?: User): Promise<
       return handlePaymentMethodCommand(user);
     case 'withdrawal_request':
       return handleWithdrawalRequestCommand(user);
+    case 'earn_bonus':
+      return handleEarnBonusCommand(user);
     default:
       return { 
         type: 'error', 
@@ -144,12 +146,12 @@ async function handleWithdrawCommand(user?: User, amount?: number): Promise<BotR
 async function handleHelpCommand(): Promise<BotResponse> {
   return {
     type: 'text',
-    message: '📋 Available Commands:\n\n/start - Start or restart the bot\n/balance - Check your current balance\n/stats - View your referral statistics\n/refer - Get your referral link\n/withdraw [amount] - Request a withdrawal (weekends only)\n/payment_info - View payment methods and info\n/payment_method - View account details for payments\n/withdrawal_request - Submit a withdrawal request\n/help - Show this help message',
+    message: '📋 Available Commands:\n\n/start - Start or restart the bot\n/balance - Check your current balance\n/stats - View your referral statistics\n/refer - Get your referral link\n/withdraw [amount] - Request a withdrawal (weekends only)\n/payment_info - View payment methods and info\n/payment_method - View account details for payments\n/withdrawal_request - Submit a withdrawal request\n/earn_bonus - Earn 100 naira bonus (available every minute)\n/help - Show this help message',
     buttons: [
       [{ text: '💰 Balance', data: '/balance' }, { text: '💳 Withdraw', data: '/withdraw' }],
       [{ text: '🔗 Invite Friends', data: '/refer' }, { text: '📊 Stats', data: '/stats' }],
       [{ text: '💵 Payment Info', data: '/payment_info' }, { text: '💳 Payment Method', data: '/payment_method' }],
-      [{ text: '📝 Withdrawal Request', data: '/withdrawal_request' }]
+      [{ text: '📝 Withdrawal Request', data: '/withdrawal_request' }, { text: '/Earn bonus', data: '/earn_bonus' }]
     ]
   };
 }
@@ -217,6 +219,27 @@ async function handlePaymentMethodCommand(user?: User): Promise<BotResponse> {
   };
 }
 
+async function handleEarnBonusCommand(user?: User): Promise<BotResponse> {
+  if (!user) {
+    return { 
+      type: 'error', 
+      message: 'You need to register first. Use /start to begin.' 
+    };
+  }
+  
+  // Add 100 naira bonus
+  await storage.updateBalance(user.id, 100);
+  
+  return {
+    type: 'success',
+    message: `✅ Bonus Added Successfully!\n\n+₦100 has been added to your balance.\n\nNew Balance: ₦${user.balance + 100}\n\nYou can earn again in 1 minute.`,
+    buttons: [
+      [{ text: '💰 Check Balance', data: '/balance' }],
+      [{ text: '🏠 Return to Menu', data: '/start' }]
+    ]
+  };
+}
+
 async function handleWithdrawalRequestCommand(user?: User): Promise<BotResponse> {
   if (!user) {
     return { 
@@ -229,32 +252,44 @@ async function handleWithdrawalRequestCommand(user?: User): Promise<BotResponse>
   const today = new Date().getDay();
   const isWeekend = today === 0 || today === 6;
 
-  if (!isWeekend) {
+  if (isWeekend) {
+    // On weekends, request bank details
     return {
-      type: 'error',
-      message: '❌ Withdrawals are only processed on weekends (Saturday & Sunday).\n\nPlease check back on weekend!'
+      type: 'text',
+      message: `✏️ Now Send Your Correct Bank Details
+Format: ACC NUMBER
+               BANK NAME
+               ACC NAME
+⚠️ This Wallet Will Be Used For Future Withdrawals !!
+
+🏦Your Set Bank Details Is:  ⛔ Not Set
+
+💹 It Will Be Used For All Future Withdrawals.`,
+      buttons: [
+        [{ text: '💰 Check Balance', data: '/balance' }],
+        [{ text: '🏠 Return to Menu', data: '/start' }]
+      ],
+      data: {
+        username: user.username,
+        balance: user.balance
+      }
+    };
+  } else {
+    // On weekdays, show the withdrawal schedule message
+    return {
+      type: 'text',
+      message: `Hi ${user.username}, 
+🔒Withdrawal opens from 12:00am on Saturdays till 10:00pm on Sunday 
+
+To qualify for the next withdrawal, make sure to invite 10 friends or more.
+
+We advise you to keep tapping and inviting friends to earn more cash.`,
+      buttons: [
+        [{ text: '💰 Check Balance', data: '/balance' }],
+        [{ text: '/Earn bonus', data: '/earn_bonus' }]
+      ]
     };
   }
-
-  if (user.balance < 1000) {
-    return {
-      type: 'error',
-      message: `❌ Insufficient balance. Your current balance is ₦${user.balance}.\n\nMinimum withdrawal amount is ₦1000.`
-    };
-  }
-
-  return {
-    type: 'text',
-    message: '📝 Withdrawal Request Form 📝\n\nPlease send your withdrawal details in this format:\n\n/withdraw [amount]\n[account number]\n[bank name]\n[account name]\n\nExample:\n/withdraw 5000\n1234567890\nOpay\nJohn Doe\n\nNote: Withdrawals are processed within 12-24 hours.',
-    buttons: [
-      [{ text: '💰 Check Balance', data: '/balance' }],
-      [{ text: '🏠 Return to Menu', data: '/start' }]
-    ],
-    data: {
-      username: user.username,
-      balance: user.balance
-    }
-  };
 }
 
 export async function registerUser(telegramId: string, username: string, referralCode?: string): Promise<User> {

@@ -57,7 +57,8 @@ export type BotCommand =
   | { type: 'joined' }
   | { type: 'payment_info' }
   | { type: 'payment_method' }
-  | { type: 'withdrawal_request' };
+  | { type: 'withdrawal_request' }
+  | { type: 'earn_bonus' };
 
 // Response types from the bot
 export type BotResponse = {
