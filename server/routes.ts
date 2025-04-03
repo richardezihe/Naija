@@ -34,6 +34,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
     const users = await storage.getAllUsers();
     res.json({ count: users.length });
   });
+  
+  // API route to get all users for dashboard
+  app.get('/api/users', async (req, res) => {
+    try {
+      const users = await storage.getAllUsers();
+      res.json(users);
+    } catch (error) {
+      console.error('Error fetching users:', error);
+      res.status(500).json({ error: 'Failed to fetch users' });
+    }
+  });
 
   // API route to get demo user stats for the frontend demo
   app.get('/api/demo/user', async (req, res) => {

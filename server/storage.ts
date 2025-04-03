@@ -40,6 +40,74 @@ export class MemStorage implements IStorage {
     this.withdrawals = new Map();
     this.currentUserId = 1;
     this.currentWithdrawalId = 1;
+    
+    // Add some sample users for demonstration purposes
+    this.addSampleUsers();
+  }
+  
+  private addSampleUsers() {
+    // Add sample user data for testing the dashboard
+    const sampleUsers = [
+      {
+        id: this.currentUserId++,
+        username: "Ezihe001",
+        telegramId: "123456789",
+        balance: 2000,
+        totalEarnings: 2000,
+        totalReferrals: 2,
+        referralCode: "Ani68xfC",
+        isActive: true,
+        joinedAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString() // 30 days ago
+      },
+      {
+        id: this.currentUserId++,
+        username: "JohnDoe",
+        telegramId: "987654321",
+        balance: 5000,
+        totalEarnings: 5000,
+        totalReferrals: 5,
+        referralCode: "Joh43xTr",
+        isActive: true,
+        joinedAt: new Date(Date.now() - 20 * 24 * 60 * 60 * 1000).toISOString() // 20 days ago
+      },
+      {
+        id: this.currentUserId++,
+        username: "Alice_Smith",
+        telegramId: "555666777",
+        balance: 3000,
+        totalEarnings: 3000,
+        totalReferrals: 3,
+        referralCode: "Ali92qWe",
+        isActive: true,
+        joinedAt: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString() // 15 days ago
+      },
+      {
+        id: this.currentUserId++,
+        username: "Bob_Johnson",
+        telegramId: "111222333",
+        balance: 1000,
+        totalEarnings: 1000,
+        totalReferrals: 1,
+        referralCode: "Bob76zPo",
+        isActive: true,
+        joinedAt: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString() // 10 days ago
+      },
+      {
+        id: this.currentUserId++,
+        username: "Sarah123",
+        telegramId: "444555666",
+        balance: 0,
+        totalEarnings: 0,
+        totalReferrals: 0,
+        referralCode: "Sar38vBn",
+        isActive: true,
+        joinedAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString() // 5 days ago
+      }
+    ];
+    
+    sampleUsers.forEach(user => {
+      this.users.set(user.id, user);
+    });
   }
 
   async getUser(id: number): Promise<User | undefined> {
