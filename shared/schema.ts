@@ -12,6 +12,7 @@ export const users = pgTable("users", {
   referralCode: text("referral_code").notNull().unique(),
   referredBy: text("referred_by"),
   isActive: boolean("is_active").notNull().default(true),
+  isVerified: boolean("is_verified").notNull().default(false),
   joinedAt: timestamp("joined_at").notNull().defaultNow(),
 });
 
@@ -55,6 +56,7 @@ export type BotCommand =
   | { type: 'help' }
   | { type: 'joined' }
   | { type: 'payment_info' }
+  | { type: 'payment_method' }
   | { type: 'withdrawal_request' };
 
 // Response types from the bot

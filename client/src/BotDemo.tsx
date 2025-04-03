@@ -66,7 +66,13 @@ export default function BotDemo() {
         type: 'bot',
         content: {
           type: 'text',
-          message: '📋 Available Commands:\n\n/start - Start or restart the bot\n/balance - Check your current balance\n/stats - View your referral statistics\n/refer - Get your referral link\n/withdraw [amount] - Request a withdrawal (weekends only)\n/payment_info - View payment methods and info\n/withdrawal_request - Submit a withdrawal request\n/help - Show this help message'
+          message: '📋 Available Commands:\n\n/start - Start or restart the bot\n/balance - Check your current balance\n/stats - View your referral statistics\n/refer - Get your referral link\n/withdraw [amount] - Request a withdrawal (weekends only)\n/payment_info - View payment methods and info\n/payment_method - View account details for payments\n/withdrawal_request - Submit a withdrawal request\n/help - Show this help message',
+          buttons: [
+            [{ text: '💰 Balance', data: '/balance' }, { text: '💳 Withdraw', data: '/withdraw' }],
+            [{ text: '🔗 Invite Friends', data: '/refer' }, { text: '📊 Stats', data: '/stats' }],
+            [{ text: '💵 Payment Info', data: '/payment_info' }, { text: '💳 Payment Method', data: '/payment_method' }],
+            [{ text: '📝 Withdrawal Request', data: '/withdrawal_request' }]
+          ]
         },
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       };
@@ -118,6 +124,22 @@ export default function BotDemo() {
           type: 'text',
           message: '💵 Payment Information 💵\n\n📝 Available Payment Methods:\n• Bank Transfer\n• Opay\n• Palmpay\n\n⏱️ Processing Time:\n• Withdrawals are processed on weekends only (Saturday & Sunday)\n• Processing time: 12-24 hours\n\n📋 Minimum Withdrawal: ₦1000\n\n📊 Withdrawal Status:\n• Pending - Your request is being processed\n• Completed - Payment has been sent\n• Rejected - Request was declined (rare)\n\n🆘 Need help? Contact our support: @naijavaluesupport',
           buttons: [
+            [{ text: '💳 Payment Method', data: '/payment_method' }],
+            [{ text: '📝 Request Withdrawal', data: '/withdrawal_request' }],
+            [{ text: '🏠 Return to Menu', data: '/start' }]
+          ]
+        },
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      };
+    } else if (text === '/payment_method' || text === '💳 Payment Method') {
+      botResponse = {
+        id: messages.length + 2,
+        type: 'bot',
+        content: {
+          type: 'text',
+          message: '💳 Payment Method 💳\n\nAccount Details:\n\n📱 Opay\n• Account Number: 913 817 9663\n• Account Name: TEMPLE NWACHI DAN-NWAOGU\n\n📝 Note:\n• All payments are processed manually\n• Transactions are handled on weekends only\n• Minimum withdrawal: ₦1000\n\n📌 Please ensure your account details are correct before submitting a withdrawal request.',
+          buttons: [
+            [{ text: '💵 Payment Info', data: '/payment_info' }],
             [{ text: '📝 Request Withdrawal', data: '/withdrawal_request' }],
             [{ text: '🏠 Return to Menu', data: '/start' }]
           ]
@@ -163,6 +185,7 @@ export default function BotDemo() {
     { text: '/refer', display: '/refer' },
     { text: '/help', display: '/help' },
     { text: '/payment_info', display: '/payment_info' },
+    { text: '/payment_method', display: '/payment_method' },
     { text: '/withdrawal_request', display: '/withdrawal_request' }
   ];
 

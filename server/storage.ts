@@ -17,6 +17,7 @@ export interface IStorage {
   getUserByReferralCode(referralCode: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
   updateBalance(userId: number, amount: number): Promise<User | undefined>;
+  updateVerificationStatus(userId: number, isVerified: boolean): Promise<User | undefined>;
   addReferral(userId: number): Promise<User | undefined>;
   
   // Withdrawal operations
@@ -81,6 +82,7 @@ export class MemStorage implements IStorage {
       totalEarnings: 0,
       totalReferrals: 0,
       isActive: true,
+      isVerified: false,
       joinedAt
     };
     
@@ -102,6 +104,19 @@ export class MemStorage implements IStorage {
     return updatedUser;
   }
 
+  async updateVerificationStatus(userId: number, isVerified: boolean): Promise<User | undefined> {
+    const user = await this.getUser(userId);
+    if (!user) return undefined;
+
+    const updatedUser = { 
+      ...user, 
+      isVerified
+    };
+    
+    this.users.set(userId, updatedUser);
+    return updatedUser;
+  }
+  
   async addReferral(userId: number): Promise<User | undefined> {
     const user = await this.getUser(userId);
     if (!user) return undefined;

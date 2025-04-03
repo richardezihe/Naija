@@ -33,11 +33,32 @@ export class TelegramBotService {
   }
   
   // Method to redirect user to verification if needed
-  private async shouldRedirectToVerification(command: BotCommand): Promise<boolean> {
-    return !this.isCommandAllowedWithoutVerification(command);
+  private async shouldRedirectToVerification(command: BotCommand, user?: User): Promise<boolean> {
+    // If command is allowed without verification, no need to redirect
+    if (this.isCommandAllowedWithoutVerification(command)) {
+      return false;
+    }
+    
+    // If user doesn't exist or isn't verified, redirect to verification
+    return !user || !user.isVerified;
   }
 
   private setupCommandHandlers() {
+    // Handle payment method command
+    this.bot.onText(/\/payment_method/, async (msg) => {
+      const user = await this.getUserFromMessage(msg);
+      const command = { type: 'payment_method' as const };
+      
+      // Check if user needs to verify first
+      if (await this.shouldRedirectToVerification(command, user)) {
+        const verificationResponse = await processCommand({ type: 'start' }, user);
+        await this.sendBotResponse(msg.chat.id, verificationResponse);
+        return;
+      }
+      
+      const response = await processCommand(command, user);
+      await this.sendBotResponse(msg.chat.id, response);
+    });
     // Handle /start command
     this.bot.onText(/\/start(?:\s+(.+))?/, async (msg, match) => {
       const telegramId = msg.from?.id.toString();
@@ -62,7 +83,7 @@ export class TelegramBotService {
       const command = { type: 'balance' as const };
       
       // Check if user needs to verify first
-      if (await this.shouldRedirectToVerification(command)) {
+      if (await this.shouldRedirectToVerification(command, user)) {
         const verificationResponse = await processCommand({ type: 'start' }, user);
         await this.sendBotResponse(msg.chat.id, verificationResponse);
         return;
@@ -78,7 +99,7 @@ export class TelegramBotService {
       const command = { type: 'stats' as const };
       
       // Check if user needs to verify first
-      if (await this.shouldRedirectToVerification(command)) {
+      if (await this.shouldRedirectToVerification(command, user)) {
         const verificationResponse = await processCommand({ type: 'start' }, user);
         await this.sendBotResponse(msg.chat.id, verificationResponse);
         return;
@@ -94,7 +115,7 @@ export class TelegramBotService {
       const command = { type: 'refer' as const };
       
       // Check if user needs to verify first
-      if (await this.shouldRedirectToVerification(command)) {
+      if (await this.shouldRedirectToVerification(command, user)) {
         const verificationResponse = await processCommand({ type: 'start' }, user);
         await this.sendBotResponse(msg.chat.id, verificationResponse);
         return;
@@ -111,7 +132,7 @@ export class TelegramBotService {
       const command = { type: 'withdraw' as const, amount };
       
       // Check if user needs to verify first
-      if (await this.shouldRedirectToVerification(command)) {
+      if (await this.shouldRedirectToVerification(command, user)) {
         const verificationResponse = await processCommand({ type: 'start' }, user);
         await this.sendBotResponse(msg.chat.id, verificationResponse);
         return;
@@ -127,7 +148,7 @@ export class TelegramBotService {
       const command = { type: 'help' as const };
       
       // Check if user needs to verify first
-      if (await this.shouldRedirectToVerification(command)) {
+      if (await this.shouldRedirectToVerification(command, user)) {
         const verificationResponse = await processCommand({ type: 'start' }, user);
         await this.sendBotResponse(msg.chat.id, verificationResponse);
         return;
@@ -143,7 +164,7 @@ export class TelegramBotService {
       const command = { type: 'payment_info' as const };
       
       // Check if user needs to verify first
-      if (await this.shouldRedirectToVerification(command)) {
+      if (await this.shouldRedirectToVerification(command, user)) {
         const verificationResponse = await processCommand({ type: 'start' }, user);
         await this.sendBotResponse(msg.chat.id, verificationResponse);
         return;
@@ -159,7 +180,7 @@ export class TelegramBotService {
       const command = { type: 'withdrawal_request' as const };
       
       // Check if user needs to verify first
-      if (await this.shouldRedirectToVerification(command)) {
+      if (await this.shouldRedirectToVerification(command, user)) {
         const verificationResponse = await processCommand({ type: 'start' }, user);
         await this.sendBotResponse(msg.chat.id, verificationResponse);
         return;
@@ -197,6 +218,9 @@ export class TelegramBotService {
         case '💵 Payment Info':
           command = { type: 'payment_info' };
           break;
+        case '💳 Payment Method':
+          command = { type: 'payment_method' };
+          break;
         case '📝 Withdrawal Request':
           command = { type: 'withdrawal_request' };
           break;
@@ -206,7 +230,7 @@ export class TelegramBotService {
         const user = await this.getUserFromMessage(msg);
         
         // Check if user needs to verify first (except for 'joined' command)
-        if (await this.shouldRedirectToVerification(command)) {
+        if (await this.shouldRedirectToVerification(command, user)) {
           const verificationResponse = await processCommand({ type: 'start' }, user);
           await this.sendBotResponse(msg.chat.id, verificationResponse);
           return;
@@ -251,13 +275,15 @@ export class TelegramBotService {
         command = { type: 'start', referralCode: match?.[1] };
       } else if (data.startsWith('/payment_info')) {
         command = { type: 'payment_info' };
+      } else if (data.startsWith('/payment_method')) {
+        command = { type: 'payment_method' };
       } else if (data.startsWith('/withdrawal_request')) {
         command = { type: 'withdrawal_request' };
       }
       
       if (command) {
         // Check if user needs to verify first (except for allowed commands)
-        if (await this.shouldRedirectToVerification(command)) {
+        if (await this.shouldRedirectToVerification(command, user)) {
           const verificationResponse = await processCommand({ type: 'start' }, user);
           await this.sendBotResponse(chatId, verificationResponse);
           

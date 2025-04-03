@@ -21,6 +21,8 @@ export async function processCommand(command: BotCommand, user?: User): Promise<
       return handleJoinedCommand(user);
     case 'payment_info':
       return handlePaymentInfoCommand(user);
+    case 'payment_method':
+      return handlePaymentMethodCommand(user);
     case 'withdrawal_request':
       return handleWithdrawalRequestCommand(user);
     default:
@@ -142,11 +144,12 @@ async function handleWithdrawCommand(user?: User, amount?: number): Promise<BotR
 async function handleHelpCommand(): Promise<BotResponse> {
   return {
     type: 'text',
-    message: '📋 Available Commands:\n\n/start - Start or restart the bot\n/balance - Check your current balance\n/stats - View your referral statistics\n/refer - Get your referral link\n/withdraw [amount] - Request a withdrawal (weekends only)\n/payment_info - View payment methods and info\n/withdrawal_request - Submit a withdrawal request\n/help - Show this help message',
+    message: '📋 Available Commands:\n\n/start - Start or restart the bot\n/balance - Check your current balance\n/stats - View your referral statistics\n/refer - Get your referral link\n/withdraw [amount] - Request a withdrawal (weekends only)\n/payment_info - View payment methods and info\n/payment_method - View account details for payments\n/withdrawal_request - Submit a withdrawal request\n/help - Show this help message',
     buttons: [
       [{ text: '💰 Balance', data: '/balance' }, { text: '💳 Withdraw', data: '/withdraw' }],
       [{ text: '🔗 Invite Friends', data: '/refer' }, { text: '📊 Stats', data: '/stats' }],
-      [{ text: '💵 Payment Info', data: '/payment_info' }, { text: '📝 Withdrawal Request', data: '/withdrawal_request' }]
+      [{ text: '💵 Payment Info', data: '/payment_info' }, { text: '💳 Payment Method', data: '/payment_method' }],
+      [{ text: '📝 Withdrawal Request', data: '/withdrawal_request' }]
     ]
   };
 }
@@ -159,9 +162,10 @@ async function handleJoinedCommand(user?: User): Promise<BotResponse> {
     };
   }
   
-  // User is now verified
+  // Mark user as verified
   // In a real implementation, this would check with Telegram API if user has joined channels
   // For this implementation, we'll assume they have if they click the verification button
+  await storage.updateVerificationStatus(user.id, true);
   
   return {
     type: 'text',
@@ -169,8 +173,8 @@ async function handleJoinedCommand(user?: User): Promise<BotResponse> {
     buttons: [
       [{ text: '💰 Balance', data: '/balance' }, { text: '💳 Withdraw', data: '/withdraw' }],
       [{ text: '🔗 Invite Friends', data: '/refer' }, { text: '📊 Stats', data: '/stats' }],
-      [{ text: '💵 Payment Info', data: '/payment_info' }, { text: '📣 Join Channel', url: 'https://t.me/naijavalueofficial' }],
-      [{ text: '📝 Withdrawal Request', data: '/withdrawal_request' }]
+      [{ text: '💵 Payment Info', data: '/payment_info' }, { text: '💳 Payment Method', data: '/payment_method' }],
+      [{ text: '📝 Withdrawal Request', data: '/withdrawal_request' }, { text: '📣 Join Channel', url: 'https://t.me/naijavalueofficial' }]
     ]
   };
 }
@@ -187,6 +191,26 @@ async function handlePaymentInfoCommand(user?: User): Promise<BotResponse> {
     type: 'text',
     message: '💵 Payment Information 💵\n\n📝 Available Payment Methods:\n• Bank Transfer\n• Opay\n• Palmpay\n\n⏱️ Processing Time:\n• Withdrawals are processed on weekends only (Saturday & Sunday)\n• Processing time: 12-24 hours\n\n📋 Minimum Withdrawal: ₦1000\n\n📊 Withdrawal Status:\n• Pending - Your request is being processed\n• Completed - Payment has been sent\n• Rejected - Request was declined (rare)\n\n🆘 Need help? Contact our support: @naijavaluesupport',
     buttons: [
+      [{ text: '💳 Payment Method', data: '/payment_method' }],
+      [{ text: '📝 Request Withdrawal', data: '/withdrawal_request' }],
+      [{ text: '🏠 Return to Menu', data: '/start' }]
+    ]
+  };
+}
+
+async function handlePaymentMethodCommand(user?: User): Promise<BotResponse> {
+  if (!user) {
+    return { 
+      type: 'error', 
+      message: 'You need to register first. Use /start to begin.' 
+    };
+  }
+
+  return {
+    type: 'text',
+    message: '💳 Payment Method 💳\n\nAccount Details:\n\n📱 Opay\n• Account Number: 913 817 9663\n• Account Name: TEMPLE NWACHI DAN-NWAOGU\n\n📝 Note:\n• All payments are processed manually\n• Transactions are handled on weekends only\n• Minimum withdrawal: ₦1000\n\n📌 Please ensure your account details are correct before submitting a withdrawal request.',
+    buttons: [
+      [{ text: '💵 Payment Info', data: '/payment_info' }],
       [{ text: '📝 Request Withdrawal', data: '/withdrawal_request' }],
       [{ text: '🏠 Return to Menu', data: '/start' }]
     ]
