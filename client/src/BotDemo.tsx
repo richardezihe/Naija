@@ -107,15 +107,64 @@ export default function BotDemo() {
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       };
     } else if (text.startsWith('/withdraw') || text === '💳 Withdraw') {
-      botResponse = {
-        id: messages.length + 2,
-        type: 'bot',
-        content: {
-          type: 'error',
-          message: '❌ Withdrawals are only processed on weekends (Saturday & Sunday).\n\nPlease check back on weekend!'
-        },
-        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-      };
+      // Check if today is weekend (Saturday or Sunday)
+      const today = new Date().getDay();
+      const isWeekend = today === 0 || today === 6; // 0 = Sunday, 6 = Saturday
+      
+      if (isWeekend) {
+        // On weekends, process withdraw command
+        // Extract amount if provided
+        let amount = 0;
+        if (text.startsWith('/withdraw')) {
+          const match = text.match(/\/withdraw\s+(\d+)/);
+          if (match && match[1]) {
+            amount = parseInt(match[1]);
+          }
+        }
+        
+        if (amount >= 1000) {
+          // Valid withdrawal amount
+          botResponse = {
+            id: messages.length + 2,
+            type: 'bot',
+            content: {
+              type: 'success',
+              message: `✅ Your withdrawal request for ₦${amount} has been submitted.\n\nStatus: Pending\nProcessing time: 12-24 hours\n\nThank you for using 𝐍𝐀𝐈𝐉𝐀 𝐕𝐀𝐋𝐔𝐄!`,
+              buttons: [
+                [{ text: '💰 Check Balance', data: '/balance' }],
+                [{ text: '🏠 Return to Menu', data: '/start' }]
+              ]
+            },
+            timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+          };
+        } else {
+          // If no amount or insufficient amount
+          botResponse = {
+            id: messages.length + 2,
+            type: 'bot',
+            content: {
+              type: 'text',
+              message: `📝 Withdrawal Instructions 📝\n\nMinimum withdrawal: ₦1000\nYour current balance: ₦0\n\nTo withdraw, use this format:\n/withdraw [amount]\n\nExample: /withdraw 1000\n\nNote: Include your payment details after the command.`,
+              buttons: [
+                [{ text: '💰 Check Balance', data: '/balance' }],
+                [{ text: '💳 Payment Method', data: '/payment_method' }]
+              ]
+            },
+            timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+          };
+        }
+      } else {
+        // Not weekend, show error
+        botResponse = {
+          id: messages.length + 2,
+          type: 'bot',
+          content: {
+            type: 'error',
+            message: '❌ Withdrawals are only processed on weekends (Saturday & Sunday).\n\nPlease check back on weekend!'
+          },
+          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        };
+      }
     } else if (text === '/payment_info' || text === '💵 Payment Info') {
       botResponse = {
         id: messages.length + 2,
@@ -147,15 +196,37 @@ export default function BotDemo() {
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       };
     } else if (text === '/withdrawal_request' || text === '📝 Withdrawal Request') {
-      botResponse = {
-        id: messages.length + 2,
-        type: 'bot',
-        content: {
-          type: 'error',
-          message: '❌ Withdrawals are only processed on weekends (Saturday & Sunday).\n\nPlease check back on weekend!'
-        },
-        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-      };
+      // Check if today is weekend (Saturday or Sunday)
+      const today = new Date().getDay();
+      const isWeekend = today === 0 || today === 6; // 0 = Sunday, 6 = Saturday
+      
+      if (isWeekend) {
+        // On weekends, show the withdrawal form
+        botResponse = {
+          id: messages.length + 2,
+          type: 'bot',
+          content: {
+            type: 'text',
+            message: '📝 Withdrawal Request Form 📝\n\nPlease send your withdrawal details in this format:\n\n/withdraw [amount]\n[account number]\n[bank name]\n[account name]\n\nExample:\n/withdraw 5000\n1234567890\nOpay\nJohn Doe\n\nNote: Withdrawals are processed within 12-24 hours.',
+            buttons: [
+              [{ text: '💰 Check Balance', data: '/balance' }],
+              [{ text: '🏠 Return to Menu', data: '/start' }]
+            ]
+          },
+          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        };
+      } else {
+        // Not weekend, show error
+        botResponse = {
+          id: messages.length + 2,
+          type: 'bot',
+          content: {
+            type: 'error',
+            message: '❌ Withdrawals are only processed on weekends (Saturday & Sunday).\n\nPlease check back on weekend!'
+          },
+          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        };
+      }
     } else {
       botResponse = {
         id: messages.length + 2,
