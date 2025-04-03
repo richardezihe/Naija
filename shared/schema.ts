@@ -53,7 +53,9 @@ export type BotCommand =
   | { type: 'refer' }
   | { type: 'withdraw', amount: number }
   | { type: 'help' }
-  | { type: 'joined' };
+  | { type: 'joined' }
+  | { type: 'payment_info' }
+  | { type: 'withdrawal_request' };
 
 // Response types from the bot
 export type BotResponse = {

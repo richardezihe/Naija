@@ -66,7 +66,7 @@ export default function BotDemo() {
         type: 'bot',
         content: {
           type: 'text',
-          message: '📋 Available Commands:\n\n/start - Start or restart the bot\n/balance - Check your current balance\n/stats - View your referral statistics\n/refer - Get your referral link\n/withdraw [amount] - Request a withdrawal (weekends only)\n/help - Show this help message'
+          message: '📋 Available Commands:\n\n/start - Start or restart the bot\n/balance - Check your current balance\n/stats - View your referral statistics\n/refer - Get your referral link\n/withdraw [amount] - Request a withdrawal (weekends only)\n/payment_info - View payment methods and info\n/withdrawal_request - Submit a withdrawal request\n/help - Show this help message'
         },
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       };
@@ -110,6 +110,30 @@ export default function BotDemo() {
         },
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       };
+    } else if (text === '/payment_info' || text === '💵 Payment Info') {
+      botResponse = {
+        id: messages.length + 2,
+        type: 'bot',
+        content: {
+          type: 'text',
+          message: '💵 Payment Information 💵\n\n📝 Available Payment Methods:\n• Bank Transfer\n• Opay\n• Palmpay\n\n⏱️ Processing Time:\n• Withdrawals are processed on weekends only (Saturday & Sunday)\n• Processing time: 12-24 hours\n\n📋 Minimum Withdrawal: ₦1000\n\n📊 Withdrawal Status:\n• Pending - Your request is being processed\n• Completed - Payment has been sent\n• Rejected - Request was declined (rare)\n\n🆘 Need help? Contact our support: @naijavaluesupport',
+          buttons: [
+            [{ text: '📝 Request Withdrawal', data: '/withdrawal_request' }],
+            [{ text: '🏠 Return to Menu', data: '/start' }]
+          ]
+        },
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      };
+    } else if (text === '/withdrawal_request' || text === '📝 Withdrawal Request') {
+      botResponse = {
+        id: messages.length + 2,
+        type: 'bot',
+        content: {
+          type: 'error',
+          message: '❌ Withdrawals are only processed on weekends (Saturday & Sunday).\n\nPlease check back on weekend!'
+        },
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      };
     } else {
       botResponse = {
         id: messages.length + 2,
@@ -137,7 +161,9 @@ export default function BotDemo() {
     { text: '/balance', display: '/balance' },
     { text: '/stats', display: '/stats' },
     { text: '/refer', display: '/refer' },
-    { text: '/help', display: '/help' }
+    { text: '/help', display: '/help' },
+    { text: '/payment_info', display: '/payment_info' },
+    { text: '/withdrawal_request', display: '/withdrawal_request' }
   ];
 
   if (userLoading || messagesLoading) {

@@ -1,9 +1,7 @@
 export function parseButtonsFromContent(content: any) {
-  // Check if content already has buttons property
-  if (content && content.buttons) {
-    return content.buttons;
+  if (!content || !content.buttons || !Array.isArray(content.buttons)) {
+    return [];
   }
   
-  // Otherwise return empty array
-  return [];
+  return content.buttons;
 }

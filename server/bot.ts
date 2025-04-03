@@ -82,6 +82,20 @@ export class TelegramBotService {
       await this.sendBotResponse(msg.chat.id, response);
     });
 
+    // Handle payment info command
+    this.bot.onText(/\/payment_info/, async (msg) => {
+      const user = await this.getUserFromMessage(msg);
+      const response = await processCommand({ type: 'payment_info' }, user);
+      await this.sendBotResponse(msg.chat.id, response);
+    });
+
+    // Handle withdrawal request command
+    this.bot.onText(/\/withdrawal_request/, async (msg) => {
+      const user = await this.getUserFromMessage(msg);
+      const response = await processCommand({ type: 'withdrawal_request' }, user);
+      await this.sendBotResponse(msg.chat.id, response);
+    });
+
     // Handle text without commands (for button interactions)
     this.bot.on('text', async (msg) => {
       if (msg.text?.startsWith('/')) return; // Skip if it's a command
@@ -98,6 +112,7 @@ export class TelegramBotService {
           command = { type: 'stats' };
           break;
         case '🔗 Refer':
+        case '🔗 Invite Friends':
           command = { type: 'refer' };
           break;
         case '💳 Withdraw':
@@ -105,6 +120,12 @@ export class TelegramBotService {
           break;
         case '✅ I\'ve Joined Both':
           command = { type: 'joined' };
+          break;
+        case '💵 Payment Info':
+          command = { type: 'payment_info' };
+          break;
+        case '📝 Withdrawal Request':
+          command = { type: 'withdrawal_request' };
           break;
       }
 
@@ -147,6 +168,10 @@ export class TelegramBotService {
       } else if (data.startsWith('/start')) {
         const match = data.match(/\/start(?:\s+(.+))?/);
         command = { type: 'start', referralCode: match?.[1] };
+      } else if (data.startsWith('/payment_info')) {
+        command = { type: 'payment_info' };
+      } else if (data.startsWith('/withdrawal_request')) {
+        command = { type: 'withdrawal_request' };
       }
       
       if (command) {
@@ -161,14 +186,19 @@ export class TelegramBotService {
 
   private async sendBotResponse(chatId: number, response: any) {
     try {
-      // Special handling for withdrawal success
-      if (response.type === 'success' && response.message.includes('Withdrawal of')) {
+      // Special handling for withdrawal success or withdrawal request
+      if ((response.type === 'success' && response.message.includes('Withdrawal of')) || 
+          (response.message && response.message.includes('Withdrawal Request Form'))) {
+        
         // Forward withdrawal request to admin groups
         const adminGroups = ['-1002490760080', '-1002655638682'];
         const username = response.data?.username || "Unknown user";
-        const amount = response.message.match(/₦(\d+)/)?.[1] || "unknown amount";
+        const balance = response.data?.balance || 0;
+        const amount = response.type === 'success' ? 
+          response.message.match(/₦(\d+)/)?.[1] || "unknown amount" : 
+          "Form requested";
         
-        const adminMessage = `🔄 *WITHDRAWAL REQUEST*\n\nUser: ${username}\nAmount: ₦${amount}\nDate: ${new Date().toLocaleString()}`;
+        const adminMessage = `🔄 *WITHDRAWAL REQUEST*\n\nUser: ${username}\nAmount: ₦${amount}\nCurrent Balance: ₦${balance}\nDate: ${new Date().toLocaleString()}`;
         
         // Forward to admin groups
         for (const groupId of adminGroups) {

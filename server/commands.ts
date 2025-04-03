@@ -19,6 +19,10 @@ export async function processCommand(command: BotCommand, user?: User): Promise<
       return handleHelpCommand();
     case 'joined':
       return handleJoinedCommand(user);
+    case 'payment_info':
+      return handlePaymentInfoCommand(user);
+    case 'withdrawal_request':
+      return handleWithdrawalRequestCommand(user);
     default:
       return { 
         type: 'error', 
@@ -140,7 +144,8 @@ async function handleWithdrawCommand(user?: User, amount?: number): Promise<BotR
     type: 'success',
     message: `✅ Withdrawal of ₦${amount} has been processed successfully.\n\nYour new balance: ₦${user.balance - amount}`,
     data: {
-      username: user.username
+      username: user.username,
+      balance: user.balance - amount
     }
   };
 }
@@ -148,7 +153,12 @@ async function handleWithdrawCommand(user?: User, amount?: number): Promise<BotR
 async function handleHelpCommand(): Promise<BotResponse> {
   return {
     type: 'text',
-    message: '📋 Available Commands:\n\n/start - Start or restart the bot\n/balance - Check your current balance\n/stats - View your referral statistics\n/refer - Get your referral link\n/withdraw [amount] - Request a withdrawal (weekends only)\n/help - Show this help message'
+    message: '📋 Available Commands:\n\n/start - Start or restart the bot\n/balance - Check your current balance\n/stats - View your referral statistics\n/refer - Get your referral link\n/withdraw [amount] - Request a withdrawal (weekends only)\n/payment_info - View payment methods and info\n/withdrawal_request - Submit a withdrawal request\n/help - Show this help message',
+    buttons: [
+      [{ text: '💰 Balance', data: '/balance' }, { text: '💳 Withdraw', data: '/withdraw' }],
+      [{ text: '🔗 Invite Friends', data: '/refer' }, { text: '📊 Stats', data: '/stats' }],
+      [{ text: '💵 Payment Info', data: '/payment_info' }, { text: '📝 Withdrawal Request', data: '/withdrawal_request' }]
+    ]
   };
 }
 
@@ -156,11 +166,12 @@ async function handleJoinedCommand(user?: User): Promise<BotResponse> {
   if (user) {
     return {
       type: 'text',
-      message: '✨ Welcome to 𝐍𝐀𝐈𝐉𝐀 𝐕𝐀𝐋𝐔𝐄 Bot ✨\n\nMake money by referring new members to our community! 💰\n\nWhat We Offer:\n• Earn ₦1000 for each referral\n• Weekend withdrawals\n• Real-time tracking\n• 24/7 automated system\n\nStart earning today! 💰\nUse /refer to get your referral link\nUse /help to see all commands',
+      message: '✨ Welcome to 𝐍𝐀𝐈𝐉𝐀 𝐕𝐀𝐋𝐔𝐄 Bot ✨\n\nMake money by referring new members to our community! 💰\n\nWhat We Offer:\n• Earn ₦1000 for each referral\n• Weekend withdrawals\n• Real-time tracking\n• 24/7 automated system\n\nStart earning today! 💰\nUse the buttons below to navigate:',
       buttons: [
-        [{ text: '💰 Balance', data: '/balance' }, { text: '📊 Stats', data: '/stats' }],
-        [{ text: '🔗 Refer', data: '/refer' }, { text: '💳 Withdraw', data: '/withdraw' }],
-        [{ text: '🆘 Support', url: 'https://t.me/naijavaluesupport' }]
+        [{ text: '💰 Balance', data: '/balance' }, { text: '💳 Withdraw', data: '/withdraw' }],
+        [{ text: '🔗 Invite Friends', data: '/refer' }, { text: '📊 Stats', data: '/stats' }],
+        [{ text: '💵 Payment Info', data: '/payment_info' }, { text: '📣 Join Channel', url: 'https://t.me/naijavalueofficial' }],
+        [{ text: '📝 Withdrawal Request', data: '/withdrawal_request' }]
       ]
     };
   }
@@ -168,6 +179,64 @@ async function handleJoinedCommand(user?: User): Promise<BotResponse> {
   return {
     type: 'text',
     message: 'Please use /start to register first.'
+  };
+}
+
+async function handlePaymentInfoCommand(user?: User): Promise<BotResponse> {
+  if (!user) {
+    return { 
+      type: 'error', 
+      message: 'You need to register first. Use /start to begin.' 
+    };
+  }
+
+  return {
+    type: 'text',
+    message: '💵 Payment Information 💵\n\n📝 Available Payment Methods:\n• Bank Transfer\n• Opay\n• Palmpay\n\n⏱️ Processing Time:\n• Withdrawals are processed on weekends only (Saturday & Sunday)\n• Processing time: 12-24 hours\n\n📋 Minimum Withdrawal: ₦1000\n\n📊 Withdrawal Status:\n• Pending - Your request is being processed\n• Completed - Payment has been sent\n• Rejected - Request was declined (rare)\n\n🆘 Need help? Contact our support: @naijavaluesupport',
+    buttons: [
+      [{ text: '📝 Request Withdrawal', data: '/withdrawal_request' }],
+      [{ text: '🏠 Return to Menu', data: '/start' }]
+    ]
+  };
+}
+
+async function handleWithdrawalRequestCommand(user?: User): Promise<BotResponse> {
+  if (!user) {
+    return { 
+      type: 'error', 
+      message: 'You need to register first. Use /start to begin.' 
+    };
+  }
+
+  // Check if today is weekend (Saturday or Sunday)
+  const today = new Date().getDay();
+  const isWeekend = today === 0 || today === 6;
+
+  if (!isWeekend) {
+    return {
+      type: 'error',
+      message: '❌ Withdrawals are only processed on weekends (Saturday & Sunday).\n\nPlease check back on weekend!'
+    };
+  }
+
+  if (user.balance < 1000) {
+    return {
+      type: 'error',
+      message: `❌ Insufficient balance. Your current balance is ₦${user.balance}.\n\nMinimum withdrawal amount is ₦1000.`
+    };
+  }
+
+  return {
+    type: 'text',
+    message: '📝 Withdrawal Request Form 📝\n\nPlease send your withdrawal details in this format:\n\n/withdraw [amount]\n[account number]\n[bank name]\n[account name]\n\nExample:\n/withdraw 5000\n1234567890\nOpay\nJohn Doe\n\nNote: Withdrawals are processed within 12-24 hours.',
+    buttons: [
+      [{ text: '💰 Check Balance', data: '/balance' }],
+      [{ text: '🏠 Return to Menu', data: '/start' }]
+    ],
+    data: {
+      username: user.username,
+      balance: user.balance
+    }
   };
 }
 
