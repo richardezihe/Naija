@@ -61,8 +61,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         id: 1,
         type: 'bot',
         content: {
-          type: 'text',
-          message: '✨ Welcome to NaijaValue Bot ✨\n\nMake money by referring new members to our community! 💰\n\nWhat We Offer:\n• Earn ₦1000 for each referral\n• Weekend withdrawals\n• Real-time tracking\n• 24/7 automated system\n\nStart earning today! 💰\nUse /refer to get your referral link\nUse /help to see all command'
+          type: 'warning',
+          message: '⚠️ MANDATORY REQUIREMENT ⚠️\n\nYou must join our channel and community group to use this bot.\n\nPlease use the buttons below to join, then click "✅ I\'ve Joined Both"'
         },
         timestamp: '11:17 PM'
       },
@@ -70,8 +70,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         id: 2,
         type: 'bot',
         content: {
-          type: 'warning',
-          message: '⚠️ MANDATORY REQUIREMENT ⚠️\n\nYou must join our channel and community group to use this bot.\n\nPlease use the buttons below to join, then click "✅ I\'ve Joined Both"'
+          type: 'buttons',
+          buttons: [
+            [
+              { text: '📋 Join Channel', url: 'https://t.me/naijavalueofficial' },
+              { text: '👥 Join Community', url: 'https://t.me/naijavaluecommunity' }
+            ],
+            [{ text: '✅ I\'ve Joined Both', data: '/joined' }]
+          ]
         },
         timestamp: '11:17 PM'
       },
@@ -79,16 +85,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         id: 3,
         type: 'bot',
         content: {
-          type: 'buttons',
-          buttons: [
-            [
-              { text: '📋 Join Channel', url: 'https://t.me/naijavaluechannel' },
-              { text: '👥 Join Community', url: 'https://t.me/naijavaluegroup' }
-            ],
-            [{ text: '✅ I\'ve Joined Both', data: '/joined' }]
-          ]
+          type: 'text',
+          message: '✨ Welcome to 𝐍𝐀𝐈𝐉𝐀 𝐕𝐀𝐋𝐔𝐄 Bot ✨\n\nMake money by referring new members to our community! 💰\n\nWhat We Offer:\n• Earn ₦1000 for each referral\n• Weekend withdrawals\n• Real-time tracking\n• 24/7 automated system\n\nStart earning today! 💰\nUse /refer to get your referral link\nUse /help to see all command'
         },
-        timestamp: '11:17 PM'
+        timestamp: '11:18 PM'
       },
       {
         id: 4,
@@ -119,7 +119,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         type: 'bot',
         content: {
           type: 'balance',
-          message: '💰 Your Balance 💰\n\nCurrent Balance: ₦0\n\n📊 Summary:\n• Total Referrals: 0\n• Earnings per Referral: ₦100\n• Total Earnings: ₦0\n\n💳 To withdraw, use:\n/withdraw [amount]\n\nNote: Withdrawals are processed on weekends only (Saturday & Sunday).'
+          message: '💰 Your Balance 💰\n\nCurrent Balance: ₦0\n\n📊 Summary:\n• Total Referrals: 0\n• Earnings per Referral: ₦1000\n• Total Earnings: ₦0\n\n💳 To withdraw, use:\n/withdraw [amount]\n\nNote: Withdrawals are processed on weekends only (Saturday & Sunday).'
         },
         timestamp: '11:27 PM'
       },
@@ -164,7 +164,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         type: 'bot',
         content: {
           type: 'stats',
-          message: '📊 Your Stats 📊\n\n👤 Username: Ezihe001\n💰 Balance: ₦0\n🔗 Referrals: 0\n🏆 Rank: #1\n\n📝 Performance:\n• Earnings per Referral: ₦100\n• Total Earnings: ₦0\n\n✨ Share your referral link to earn more!\nUse /refer to get your link.'
+          message: '📊 Your Stats 📊\n\n👤 Username: Ezihe001\n💰 Balance: ₦0\n🔗 Referrals: 0\n🏆 Rank: #1\n\n📝 Performance:\n• Earnings per Referral: ₦1000\n• Total Earnings: ₦0\n\n✨ Share your referral link to earn more!\nUse /refer to get your link.'
         },
         timestamp: '11:28 PM'
       },

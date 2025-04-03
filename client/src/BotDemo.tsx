@@ -76,7 +76,7 @@ export default function BotDemo() {
         type: 'bot',
         content: {
           type: 'balance',
-          message: '💰 Your Balance 💰\n\nCurrent Balance: ₦0\n\n📊 Summary:\n• Total Referrals: 0\n• Earnings per Referral: ₦100\n• Total Earnings: ₦0\n\n💳 To withdraw, use:\n/withdraw [amount]\n\nNote: Withdrawals are processed on weekends only (Saturday & Sunday).'
+          message: '💰 Your Balance 💰\n\nCurrent Balance: ₦0\n\n📊 Summary:\n• Total Referrals: 0\n• Earnings per Referral: ₦1000\n• Total Earnings: ₦0\n\n💳 To withdraw, use:\n/withdraw [amount]\n\nNote: Withdrawals are processed on weekends only (Saturday & Sunday).'
         },
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       };
@@ -86,7 +86,7 @@ export default function BotDemo() {
         type: 'bot',
         content: {
           type: 'stats',
-          message: '📊 Your Stats 📊\n\n👤 Username: Ezihe001\n💰 Balance: ₦0\n🔗 Referrals: 0\n🏆 Rank: #1\n\n📝 Performance:\n• Earnings per Referral: ₦100\n• Total Earnings: ₦0\n\n✨ Share your referral link to earn more!\nUse /refer to get your link.'
+          message: '📊 Your Stats 📊\n\n👤 Username: Ezihe001\n💰 Balance: ₦0\n🔗 Referrals: 0\n🏆 Rank: #1\n\n📝 Performance:\n• Earnings per Referral: ₦1000\n• Total Earnings: ₦0\n\n✨ Share your referral link to earn more!\nUse /refer to get your link.'
         },
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       };
@@ -143,14 +143,14 @@ export default function BotDemo() {
   if (userLoading || messagesLoading) {
     return (
       <div className="flex h-screen items-center justify-center bg-dark-bg text-white">
-        <div className="animate-pulse">Loading NaijaValuebot...</div>
+        <div className="animate-pulse">Loading 𝐍𝐀𝐈𝐉𝐀 𝐕𝐀𝐋𝐔𝐄...</div>
       </div>
     );
   }
 
   return (
     <ChatInterface
-      botName="NaijaValuebot"
+      botName="𝐍𝐀𝐈𝐉𝐀 𝐕𝐀𝐋𝐔𝐄"
       userCount="2 monthly users"
       messages={messages}
       inputValue={inputValue}

@@ -1,7 +1,7 @@
 import { BotCommand, BotResponse, InsertUser, User } from '@shared/schema';
 import { storage, MemStorage } from './storage';
 
-const EARNINGS_PER_REFERRAL = 100; // ₦100 per referral
+const EARNINGS_PER_REFERRAL = 1000; // ₦1000 per referral
 
 export async function processCommand(command: BotCommand, user?: User): Promise<BotResponse> {
   switch (command.type) {
@@ -31,7 +31,7 @@ async function handleStartCommand(referralCode?: string, existingUser?: User): P
   if (existingUser) {
     return {
       type: 'text',
-      message: '✨ Welcome back to NaijaValue Bot ✨\n\nYou are already registered with us. Use the commands below to navigate:',
+      message: '✨ Welcome back to 𝐍𝐀𝐈𝐉𝐀 𝐕𝐀𝐋𝐔𝐄 Bot ✨\n\nYou are already registered with us. Use the commands below to navigate:',
       buttons: [
         [{ text: '💰 Balance', data: '/balance' }, { text: '📊 Stats', data: '/stats' }],
         [{ text: '🔗 Refer', data: '/refer' }, { text: '💳 Withdraw', data: '/withdraw' }]
@@ -39,13 +39,14 @@ async function handleStartCommand(referralCode?: string, existingUser?: User): P
     };
   }
 
+  // First send mandatory requirement message
   return {
-    type: 'text',
-    message: '✨ Welcome to NaijaValue Bot ✨\n\nMake money by referring new members to our community! 💰\n\nWhat We Offer:\n• Earn ₦1000 for each referral\n• Weekend withdrawals\n• Real-time tracking\n• 24/7 automated system\n\nStart earning today! 💰\nUse /refer to get your referral link\nUse /help to see all command',
+    type: 'warning',
+    message: '⚠️ MANDATORY REQUIREMENT ⚠️\n\nYou must join our channel and community group to use this bot.\n\nPlease use the buttons below to join, then click "✅ I\'ve Joined Both"',
     buttons: [
       [
-        { text: '📋 Join Channel', url: 'https://t.me/naijavaluechannel' },
-        { text: '👥 Join Community', url: 'https://t.me/naijavaluegroup' }
+        { text: '📋 Join Channel', url: 'https://t.me/naijavalueofficial' },
+        { text: '👥 Join Community', url: 'https://t.me/naijavaluecommunity' }
       ],
       [{ text: '✅ I\'ve Joined Both', data: '/joined' }]
     ]
@@ -137,7 +138,10 @@ async function handleWithdrawCommand(user?: User, amount?: number): Promise<BotR
 
   return {
     type: 'success',
-    message: `✅ Withdrawal of ₦${amount} has been processed successfully.\n\nYour new balance: ₦${user.balance - amount}`
+    message: `✅ Withdrawal of ₦${amount} has been processed successfully.\n\nYour new balance: ₦${user.balance - amount}`,
+    data: {
+      username: user.username
+    }
   };
 }
 
@@ -151,11 +155,12 @@ async function handleHelpCommand(): Promise<BotResponse> {
 async function handleJoinedCommand(user?: User): Promise<BotResponse> {
   if (user) {
     return {
-      type: 'success',
-      message: '✅ Thank you for joining our community!\n\nYou now have full access to all bot features including:\n• Referring friends\n• Checking your balance\n• Requesting withdrawals\n\nUse the buttons below to navigate:',
+      type: 'text',
+      message: '✨ Welcome to 𝐍𝐀𝐈𝐉𝐀 𝐕𝐀𝐋𝐔𝐄 Bot ✨\n\nMake money by referring new members to our community! 💰\n\nWhat We Offer:\n• Earn ₦1000 for each referral\n• Weekend withdrawals\n• Real-time tracking\n• 24/7 automated system\n\nStart earning today! 💰\nUse /refer to get your referral link\nUse /help to see all commands',
       buttons: [
         [{ text: '💰 Balance', data: '/balance' }, { text: '📊 Stats', data: '/stats' }],
-        [{ text: '🔗 Refer', data: '/refer' }, { text: '💳 Withdraw', data: '/withdraw' }]
+        [{ text: '🔗 Refer', data: '/refer' }, { text: '💳 Withdraw', data: '/withdraw' }],
+        [{ text: '🆘 Support', url: 'https://t.me/naijavaluesupport' }]
       ]
     };
   }

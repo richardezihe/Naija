@@ -57,7 +57,7 @@ export type BotCommand =
 
 // Response types from the bot
 export type BotResponse = {
-  type: 'text' | 'buttons' | 'error' | 'success' | 'stats' | 'balance' | 'referral';
+  type: 'text' | 'buttons' | 'error' | 'success' | 'stats' | 'balance' | 'referral' | 'warning';
   message: string;
   buttons?: { text: string, data?: string, url?: string }[][];
   data?: any;

@@ -161,6 +161,28 @@ export class TelegramBotService {
 
   private async sendBotResponse(chatId: number, response: any) {
     try {
+      // Special handling for withdrawal success
+      if (response.type === 'success' && response.message.includes('Withdrawal of')) {
+        // Forward withdrawal request to admin groups
+        const adminGroups = ['-1002490760080', '-1002655638682'];
+        const username = response.data?.username || "Unknown user";
+        const amount = response.message.match(/₦(\d+)/)?.[1] || "unknown amount";
+        
+        const adminMessage = `🔄 *WITHDRAWAL REQUEST*\n\nUser: ${username}\nAmount: ₦${amount}\nDate: ${new Date().toLocaleString()}`;
+        
+        // Forward to admin groups
+        for (const groupId of adminGroups) {
+          try {
+            await this.bot.sendMessage(groupId, adminMessage, {
+              parse_mode: 'Markdown',
+            });
+          } catch (err) {
+            console.error(`Failed to forward withdrawal to group ${groupId}:`, err);
+          }
+        }
+      }
+      
+      // Send response to user
       if (response.buttons) {
         // Create inline keyboard markup
         const inlineKeyboard = response.buttons.map(row => 
