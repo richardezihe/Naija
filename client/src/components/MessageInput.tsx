@@ -1,4 +1,7 @@
-import { KeyboardEvent } from 'react';
+import { useState } from 'react';
+import { Input } from './ui/input';
+import { Button } from './ui/button';
+import { Send, Command } from 'lucide-react';
 
 interface MessageInputProps {
   value: string;
@@ -11,54 +14,74 @@ export default function MessageInput({
   value, 
   onChange, 
   onSendMessage,
-  quickCommands 
+  quickCommands
 }: MessageInputProps) {
-  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter' && value.trim()) {
-      onSendMessage(value);
+  const [showCommands, setShowCommands] = useState(false);
+
+  const handleSend = () => {
+    if (value.trim()) {
+      onSendMessage(value.trim());
     }
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSend();
+    }
+  };
+
+  const handleCommandClick = (command: string) => {
+    onSendMessage(command);
+    setShowCommands(false);
+  };
+
   return (
-    <div className="sticky bottom-0 bg-dark-bg border-t border-gray-800 p-2 pb-16">
-      <div className="flex items-center bg-message-bg rounded-full px-4 py-2">
-        <button className="text-gray-400 mr-2">
-          <i className="far fa-smile"></i>
-        </button>
-        <input 
-          type="text" 
+    <div className="border-t border-gray-700 p-3 bg-gray-800">
+      {/* Quick commands */}
+      {showCommands && (
+        <div className="mb-2 p-2 bg-gray-800 rounded-lg border border-gray-700 grid grid-cols-2 gap-1 shadow-lg">
+          {quickCommands.map((cmd, i) => (
+            <Button 
+              key={i} 
+              size="sm" 
+              variant="outline" 
+              className="justify-start text-xs"
+              onClick={() => handleCommandClick(cmd.text)}
+            >
+              {cmd.display}
+            </Button>
+          ))}
+        </div>
+      )}
+      
+      {/* Input bar */}
+      <div className="flex items-center space-x-2">
+        <Button
+          size="icon"
+          variant="ghost"
+          className="text-gray-400 hover:text-white hover:bg-gray-700"
+          onClick={() => setShowCommands(!showCommands)}
+        >
+          <Command className="h-5 w-5" />
+        </Button>
+        
+        <Input
           value={value}
           onChange={(e) => onChange(e.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder="Message" 
-          className="bg-transparent flex-1 focus:outline-none text-white" 
+          placeholder="Type a message..."
+          className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
         />
-        <div className="flex items-center space-x-2 ml-2">
-          <button className="text-gray-400">
-            <i className="fas fa-paperclip"></i>
-          </button>
-          <button 
-            className="text-gray-400"
-            onClick={() => value.trim() && onSendMessage(value)}
-          >
-            <i className="fas fa-paper-plane"></i>
-          </button>
-        </div>
-      </div>
-      
-      {/* Quick Command Buttons */}
-      <div className="flex justify-between mt-2 px-2">
-        <div className="grid grid-cols-4 gap-2 w-full">
-          {quickCommands.map((cmd, index) => (
-            <button 
-              key={index}
-              className="bg-user-msg text-white py-1 px-3 rounded-full text-sm whitespace-nowrap"
-              onClick={() => onSendMessage(cmd.text)}
-            >
-              {cmd.display}
-            </button>
-          ))}
-        </div>
+        
+        <Button
+          size="icon"
+          disabled={!value.trim()}
+          onClick={handleSend}
+          className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-700 disabled:opacity-50"
+        >
+          <Send className="h-5 w-5" />
+        </Button>
       </div>
     </div>
   );

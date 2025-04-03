@@ -28,66 +28,57 @@ export default function ChatInterface({
   onSendMessage,
   quickCommands
 }: ChatInterfaceProps) {
-  const chatEndRef = useRef<HTMLDivElement>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Scroll to bottom when messages change
   useEffect(() => {
-    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
+  // Listen for bot:sendCommand events from button clicks
+  useEffect(() => {
+    const handleBotCommand = (e: any) => {
+      const { command } = e.detail;
+      if (command) {
+        onSendMessage(command);
+      }
+    };
+
+    window.addEventListener('bot:sendCommand', handleBotCommand);
+    
+    return () => {
+      window.removeEventListener('bot:sendCommand', handleBotCommand);
+    };
+  }, [onSendMessage]);
+
   return (
-    <div className="flex flex-col h-screen bg-dark-bg text-text-primary">
+    <div className="flex flex-col h-screen bg-gray-900 text-white">
+      {/* Telegram header */}
       <TelegramHeader botName={botName} userCount={userCount} />
       
-      <div className="flex-grow overflow-y-auto px-4 py-2 bg-dark-bg" id="chat-container">
-        <div className="max-w-lg mx-auto space-y-4 mb-20">
-          {/* Date separator for the chat */}
-          <div className="text-center text-gray-400 text-sm py-2">April 2</div>
-          
-          {/* Render messages */}
-          {messages.map(message => (
-            message.type === 'bot' ? (
-              <BotMessage 
-                key={message.id} 
-                content={message.content} 
-                timestamp={message.timestamp} 
-              />
-            ) : (
-              <UserMessage 
-                key={message.id} 
-                content={message.content} 
-                timestamp={message.timestamp} 
-              />
-            )
+      {/* Messages area */}
+      <div className="flex-1 p-4 overflow-y-auto">
+        <div className="flex flex-col space-y-3">
+          {messages.map((message) => (
+            <div key={message.id} className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}>
+              {message.type === 'bot' ? (
+                <BotMessage content={message.content} timestamp={message.timestamp} />
+              ) : (
+                <UserMessage content={message.content} timestamp={message.timestamp} />
+              )}
+            </div>
           ))}
-          
-          {/* Invisible element to scroll to */}
-          <div ref={chatEndRef} />
+          <div ref={messagesEndRef} />
         </div>
       </div>
       
+      {/* Input area */}
       <MessageInput
         value={inputValue}
         onChange={onInputChange}
         onSendMessage={onSendMessage}
         quickCommands={quickCommands}
       />
-      
-      {/* Telegram Mobile Navigation */}
-      <nav className="fixed bottom-0 left-0 w-full bg-dark-bg border-t border-gray-800 flex justify-around py-3">
-        <button className="flex flex-col items-center justify-center">
-          <i className="far fa-comment-dots text-gray-400 text-xl"></i>
-        </button>
-        <button className="flex flex-col items-center justify-center">
-          <i className="fas fa-users text-gray-400 text-xl"></i>
-        </button>
-        <button className="flex flex-col items-center justify-center">
-          <i className="fas fa-search text-gray-400 text-xl"></i>
-        </button>
-        <button className="flex flex-col items-center justify-center">
-          <i className="fas fa-cog text-gray-400 text-xl"></i>
-        </button>
-      </nav>
     </div>
   );
 }

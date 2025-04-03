@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import ChatInterface from "./components/ChatInterface";
+import MilestonePopup from "./components/MilestonePopup";
+import { useMilestones } from "./hooks/useMilestones";
 
 interface User {
   id: number;
@@ -26,6 +28,16 @@ export default function BotDemo() {
   const [messages, setMessages] = useState<BotMessage[]>([]);
   const [inputValue, setInputValue] = useState("");
   
+  // State for tracking user stats for milestone popups
+  const [previousBalance, setPreviousBalance] = useState<number>(0);
+  const [previousEarnings, setPreviousEarnings] = useState<number>(0);
+  const [previousReferrals, setPreviousReferrals] = useState<number>(0);
+  
+  // Current state (will be updated when commands are processed)
+  const [currentBalance, setCurrentBalance] = useState<number>(0);
+  const [currentEarnings, setCurrentEarnings] = useState<number>(0);
+  const [currentReferrals, setCurrentReferrals] = useState<number>(0);
+  
   // Fetch demo user
   const { data: user, isLoading: userLoading } = useQuery<User>({
     queryKey: ['/api/demo/user'],
@@ -35,6 +47,16 @@ export default function BotDemo() {
   const { data: demoMessages, isLoading: messagesLoading } = useQuery<BotMessage[]>({
     queryKey: ['/api/demo/messages'],
   });
+  
+  // Use the milestones hook to check for achievements
+  const { activeMilestone, clearActiveMilestone } = useMilestones({
+    referrals: currentReferrals,
+    earnings: currentEarnings,
+    balance: currentBalance,
+    previousReferrals,
+    previousEarnings,
+    previousBalance
+  });
 
   // Set messages once loaded
   useEffect(() => {
@@ -42,6 +64,20 @@ export default function BotDemo() {
       setMessages(demoMessages);
     }
   }, [demoMessages]);
+  
+  // Initialize user stats from API data
+  useEffect(() => {
+    if (user) {
+      setCurrentBalance(user.balance);
+      setCurrentEarnings(user.totalEarnings);
+      setCurrentReferrals(user.totalReferrals);
+      
+      // Set previous values to current initially to avoid triggering milestones on load
+      setPreviousBalance(user.balance);
+      setPreviousEarnings(user.totalEarnings);
+      setPreviousReferrals(user.totalReferrals);
+    }
+  }, [user]);
 
   // Handle sending a new message
   const handleSendMessage = (text: string) => {
@@ -82,7 +118,7 @@ export default function BotDemo() {
         type: 'bot',
         content: {
           type: 'balance',
-          message: '💰 Your Balance 💰\n\nCurrent Balance: ₦0\n\n📊 Summary:\n• Total Referrals: 0\n• Earnings per Referral: ₦1000\n• Total Earnings: ₦0\n\n💳 To withdraw, use:\n/withdraw [amount]\n\nNote: Withdrawals are processed on weekends only (Saturday & Sunday).'
+          message: `💰 Your Balance 💰\n\nCurrent Balance: ₦${currentBalance}\n\n📊 Summary:\n• Total Referrals: ${currentReferrals}\n• Earnings per Referral: ₦1000\n• Total Earnings: ₦${currentEarnings}\n\n💳 To withdraw, use:\n/withdraw [amount]\n\nNote: Withdrawals are processed on weekends only (Saturday & Sunday).`
         },
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       };
@@ -92,7 +128,7 @@ export default function BotDemo() {
         type: 'bot',
         content: {
           type: 'stats',
-          message: '📊 Your Stats 📊\n\n👤 Username: Ezihe001\n💰 Balance: ₦0\n🔗 Referrals: 0\n🏆 Rank: #1\n\n📝 Performance:\n• Earnings per Referral: ₦1000\n• Total Earnings: ₦0\n\n✨ Share your referral link to earn more!\nUse /refer to get your link.'
+          message: `📊 Your Stats 📊\n\n👤 Username: Ezihe001\n💰 Balance: ₦${currentBalance}\n🔗 Referrals: ${currentReferrals}\n🏆 Rank: #1\n\n📝 Performance:\n• Earnings per Referral: ₦1000\n• Total Earnings: ₦${currentEarnings}\n\n✨ Share your referral link to earn more!\nUse /refer to get your link.`
         },
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       };
@@ -102,7 +138,7 @@ export default function BotDemo() {
         type: 'bot',
         content: {
           type: 'referral',
-          message: '🔗 Your Referral Link 🔗\n\nhttps://t.me/NaijaValueorg_bot?start=Ani68xfC\n\n💰 Share this link with your friends to earn rewards!\n\n📊 You currently have 0 confirmed referrals.\n\nHow it works:\n1. Share your unique referral link\n2. Friends join using your link\n3. You earn rewards for each verified referral'
+          message: `🔗 Your Referral Link 🔗\n\nhttps://t.me/NaijaValueorg_bot?start=Ani68xfC\n\n💰 Share this link with your friends to earn rewards!\n\n📊 You currently have ${currentReferrals} confirmed referrals.\n\nHow it works:\n1. Share your unique referral link\n2. Friends join using your link\n3. You earn rewards for each verified referral`
         },
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       };
@@ -148,7 +184,7 @@ export default function BotDemo() {
             type: 'bot',
             content: {
               type: 'text',
-              message: `📝 Withdrawal Instructions 📝\n\nMinimum withdrawal: ₦1000\nYour current balance: ₦0\n\nTo withdraw, use this format:\n/withdraw [amount]\n\nExample: /withdraw 1000\n\nNote: Include your payment details after the command.`,
+              message: `📝 Withdrawal Instructions 📝\n\nMinimum withdrawal: ₦1000\nYour current balance: ₦${currentBalance}\n\nTo withdraw, use this format:\n/withdraw [amount]\n\nExample: /withdraw 1000\n\nNote: Include your payment details after the command.`,
               buttons: [
                 [{ text: '💰 Check Balance', data: '/balance' }],
                 [{ text: '💳 Payment Method', data: '/payment_method' }]
@@ -200,12 +236,24 @@ export default function BotDemo() {
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       };
     } else if (text === '/earn_bonus' || text === '/Earn bonus') {
+      // Update balance state - add 100 naira to current balance
+      const newBalance = currentBalance + 100;
+      const newEarnings = currentEarnings + 100;
+      
+      // Store current values for milestone comparison
+      setPreviousBalance(currentBalance);
+      setPreviousEarnings(currentEarnings);
+      
+      // Update current values
+      setCurrentBalance(newBalance);
+      setCurrentEarnings(newEarnings);
+      
       botResponse = {
         id: messages.length + 2,
         type: 'bot',
         content: {
           type: 'success',
-          message: '✅ Bonus Added Successfully!\n\n+₦100 has been added to your balance.\n\nNew Balance: ₦100\n\nYou can earn again in 1 minute.',
+          message: `✅ Bonus Added Successfully!\n\n+₦100 has been added to your balance.\n\nNew Balance: ₦${newBalance}\n\nYou can earn again in 1 minute.`,
           buttons: [
             [{ text: '💰 Check Balance', data: '/balance' }],
             [{ text: '🏠 Return to Menu', data: '/start' }]
@@ -266,6 +314,39 @@ We advise you to keep tapping and inviting friends to earn more cash.`,
           timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
         };
       }
+    } else if (text === '/add_referral') {
+      // This is a demo-only command to simulate adding a referral for milestone testing
+      
+      // Store current values for milestone comparison
+      setPreviousReferrals(currentReferrals);
+      setPreviousEarnings(currentEarnings);
+      setPreviousBalance(currentBalance);
+      
+      // Add 1 to referrals count
+      const newReferrals = currentReferrals + 1;
+      // Add 1000 naira to earnings
+      const newEarnings = currentEarnings + 1000;
+      // Add 1000 naira to balance
+      const newBalance = currentBalance + 1000;
+      
+      // Update current values
+      setCurrentReferrals(newReferrals);
+      setCurrentEarnings(newEarnings);
+      setCurrentBalance(newBalance);
+      
+      botResponse = {
+        id: messages.length + 2,
+        type: 'bot',
+        content: {
+          type: 'success',
+          message: `✅ New Referral Added Successfully!\n\n+₦1000 has been added to your balance.\n\nCurrent Stats:\n• Total Referrals: ${newReferrals}\n• Balance: ₦${newBalance}\n• Total Earnings: ₦${newEarnings}`,
+          buttons: [
+            [{ text: '💰 Check Balance', data: '/balance' }],
+            [{ text: '📊 View Stats', data: '/stats' }]
+          ]
+        },
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      };
     } else {
       botResponse = {
         id: messages.length + 2,
@@ -297,7 +378,8 @@ We advise you to keep tapping and inviting friends to earn more cash.`,
     { text: '/payment_info', display: '/payment_info' },
     { text: '/payment_method', display: '/payment_method' },
     { text: '/withdrawal_request', display: '/withdrawal_request' },
-    { text: '/earn_bonus', display: '/Earn bonus' }
+    { text: '/earn_bonus', display: '/Earn bonus' },
+    { text: '/add_referral', display: '/add_referral' } // Added for testing referral milestones
   ];
 
   if (userLoading || messagesLoading) {
@@ -309,14 +391,24 @@ We advise you to keep tapping and inviting friends to earn more cash.`,
   }
 
   return (
-    <ChatInterface
-      botName="𝐍𝐀𝐈𝐉𝐀 𝐕𝐀𝐋𝐔𝐄"
-      userCount="2 monthly users"
-      messages={messages}
-      inputValue={inputValue}
-      onInputChange={setInputValue}
-      onSendMessage={handleSendMessage}
-      quickCommands={quickCommands}
-    />
+    <>
+      <ChatInterface
+        botName="𝐍𝐀𝐈𝐉𝐀 𝐕𝐀𝐋𝐔𝐄"
+        userCount="2 monthly users"
+        messages={messages}
+        inputValue={inputValue}
+        onInputChange={setInputValue}
+        onSendMessage={handleSendMessage}
+        quickCommands={quickCommands}
+      />
+      
+      {/* Show milestone popup when a milestone is achieved */}
+      {activeMilestone && (
+        <MilestonePopup 
+          milestone={activeMilestone} 
+          onClose={clearActiveMilestone} 
+        />
+      )}
+    </>
   );
 }

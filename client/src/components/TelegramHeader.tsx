@@ -5,28 +5,23 @@ interface TelegramHeaderProps {
 
 export default function TelegramHeader({ botName, userCount }: TelegramHeaderProps) {
   return (
-    <header className="sticky top-0 z-10 bg-dark-bg border-b border-gray-800 px-4 py-2 flex items-center">
-      <button className="text-white mr-4">
-        <i className="fas fa-arrow-left"></i>
-      </button>
-      
-      <div className="flex items-center">
-        <div className="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center mr-3 overflow-hidden">
-          <div className="w-full h-full flex items-center justify-center bg-green-800 text-white">
-            <span className="text-xl font-bold">N</span>
-          </div>
-        </div>
-        <div>
-          <h1 className="font-semibold text-lg">{botName}</h1>
-          <p className="text-xs text-text-secondary">{userCount}</p>
-        </div>
+    <div className="bg-gray-800 p-3 border-b border-gray-700 flex items-center">
+      <div className="flex flex-col">
+        <div className="font-bold text-lg">{botName}</div>
+        <div className="text-xs text-gray-400">{userCount}</div>
       </div>
-      
-      <div className="ml-auto">
-        <button className="text-white">
-          <i className="fas fa-ellipsis-v"></i>
+      <div className="ml-auto flex items-center space-x-3">
+        <button className="text-gray-400 hover:text-white">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+        </button>
+        <button className="text-gray-400 hover:text-white">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
+          </svg>
         </button>
       </div>
-    </header>
+    </div>
   );
 }

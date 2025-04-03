@@ -1,4 +1,5 @@
 import { parseButtonsFromContent } from '../utils/messageUtils';
+import { Button } from './ui/button';
 
 interface ButtonType {
   text: string;
@@ -12,106 +13,71 @@ interface BotMessageProps {
 }
 
 export default function BotMessage({ content, timestamp }: BotMessageProps) {
-  // Function to render message content based on type
-  const renderContent = () => {
-    const messageType = content.type || 'text';
-    
-    switch (messageType) {
-      case 'warning':
-        return (
-          <div className="space-y-2">
-            <p className="text-error font-medium">{content.message}</p>
-          </div>
-        );
-        
-      case 'error':
-        return (
-          <div className="space-y-2">
-            <p>{content.message}</p>
-          </div>
-        );
-        
-      case 'success':
-        return (
-          <div className="space-y-2">
-            <p className="text-success font-medium">{content.message}</p>
-          </div>
-        );
-        
-      case 'balance':
-      case 'stats':
-      case 'referral':
-        return (
-          <div className="space-y-2">
-            <p dangerouslySetInnerHTML={{ __html: content.message.replace(/\n/g, '<br>') }} />
-          </div>
-        );
-        
-      case 'buttons':
-        return (
-          <div className="grid grid-cols-2 gap-2">
-            {content.buttons[0].map((btn: any, idx: number) => (
-              <button 
-                key={idx}
-                className="bg-dark-bg hover:bg-gray-800 text-white py-2 px-3 rounded flex items-center justify-center"
-                onClick={() => btn.url ? window.open(btn.url, '_blank') : null}
-              >
-                {btn.text}
-                {btn.url && <i className="fas fa-external-link-alt ml-2 text-xs"></i>}
-              </button>
-            ))}
-            <div className="col-span-2 mt-2">
-              <button className="bg-success hover:bg-green-700 text-white py-2 px-4 rounded w-full flex items-center justify-center">
-                {content.buttons[1][0].text}
-              </button>
-            </div>
-          </div>
-        );
-        
-      case 'text':
-      default:
-        return (
-          <div className="space-y-2">
-            <p dangerouslySetInnerHTML={{ __html: content.message.replace(/\n/g, '<br>') }} />
-          </div>
-        );
-    }
-  };
+  // Determine message type and apply appropriate styling
+  let messageClass = 'bg-gray-800 text-white';
+  if (content.type === 'error') {
+    messageClass = 'bg-red-900 text-white';
+  } else if (content.type === 'success') {
+    messageClass = 'bg-green-900 text-white';
+  } else if (content.type === 'warning') {
+    messageClass = 'bg-yellow-800 text-white';
+  } else if (content.type === 'balance' || content.type === 'stats') {
+    messageClass = 'bg-blue-900 text-white';
+  } else if (content.type === 'referral') {
+    messageClass = 'bg-purple-900 text-white';
+  }
 
-  // Additional buttons that might be part of the message
-  const renderButtons = () => {
-    const buttons = parseButtonsFromContent(content);
-    
-    if (!buttons || buttons.length === 0) return null;
-    
-    return (
-      <div className="mt-3 space-y-2">
-        {buttons.map((buttonRow: ButtonType[], rowIndex: number) => (
-          <div key={rowIndex} className="flex gap-2">
-            {buttonRow.map((button: ButtonType, btnIndex: number) => (
-              <button
-                key={btnIndex}
-                className="bg-user-msg text-white py-1 px-3 rounded-full text-sm"
-                onClick={() => button.url ? window.open(button.url, '_blank') : null}
-              >
-                {button.text}
-              </button>
-            ))}
-          </div>
-        ))}
-      </div>
-    );
-  };
+  // Parse the buttons from the content if they exist
+  const buttonRows = parseButtonsFromContent(content);
 
   return (
-    <div className="flex items-start">
-      <div className="bg-message-bg rounded-lg px-4 py-3 max-w-xs sm:max-w-md w-full">
-        {renderContent()}
-        {renderButtons()}
-        <div className="text-right text-xs text-gray-500 mt-1">{timestamp}</div>
+    <div className="flex w-full">
+      <div className="flex flex-col max-w-[80%]">
+        <div className={`rounded-lg p-3 ${messageClass}`}>
+          <div className="whitespace-pre-line">{content.message}</div>
+        </div>
+        
+        {/* Buttons grid if present */}
+        {buttonRows.length > 0 && (
+          <div className="mt-2 grid gap-1">
+            {buttonRows.map((buttonRow: ButtonType[], rowIndex: number) => (
+              <div key={rowIndex} className="flex flex-wrap gap-1">
+                {buttonRow.map((button: ButtonType, btnIndex: number) => (
+                  <Button
+                    key={btnIndex}
+                    variant="outline"
+                    size="sm"
+                    className="bg-gray-800 text-white border-gray-700 hover:bg-gray-700"
+                    asChild={!!button.url}
+                    onClick={() => {
+                      if (button.data) {
+                        // This would trigger the parent component to handle the command
+                        console.log("Button clicked with command:", button.data);
+                        
+                        // Get parent to simulate sending this command
+                        const customEvent = new CustomEvent("bot:sendCommand", {
+                          detail: { command: button.data }
+                        });
+                        window.dispatchEvent(customEvent);
+                      }
+                    }}
+                  >
+                    {button.url ? (
+                      <a href={button.url} target="_blank" rel="noopener noreferrer">
+                        {button.text}
+                      </a>
+                    ) : (
+                      <span>{button.text}</span>
+                    )}
+                  </Button>
+                ))}
+              </div>
+            ))}
+          </div>
+        )}
+        
+        <div className="text-xs text-gray-500 mt-1">{timestamp}</div>
       </div>
     </div>
   );
 }
-
-
