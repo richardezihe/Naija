@@ -305,17 +305,24 @@ export class TelegramBotService {
     try {
       // Special handling for withdrawal success or withdrawal request
       if ((response.type === 'success' && response.message.includes('Withdrawal of')) || 
-          (response.message && response.message.includes('Withdrawal Request Form'))) {
+          (response.type === 'success' && response.message.includes('withdrawal request')) ||
+          (response.message && response.message.includes('Withdrawal Request Form')) ||
+          (response.data?.requestType === 'bank_details_form')) {
         
         // Forward withdrawal request to admin groups
         const adminGroups = ['-1002490760080', '-1002655638682'];
         const username = response.data?.username || "Unknown user";
         const balance = response.data?.balance || 0;
-        const amount = response.type === 'success' ? 
-          response.message.match(/₦(\d+)/)?.[1] || "unknown amount" : 
-          "Form requested";
+        let amount;
+        if (response.type === 'success' && response.message.includes('₦')) {
+          amount = response.message.match(/₦(\d+)/)?.[1] || "unknown amount";
+        } else if (response.data?.requestType === 'bank_details_form') {
+          amount = "Bank details requested";
+        } else {
+          amount = "Form requested";
+        }
         
-        const adminMessage = `🔄 *WITHDRAWAL REQUEST*\n\nUser: ${username}\nAmount: ₦${amount}\nCurrent Balance: ₦${balance}\nDate: ${new Date().toLocaleString()}`;
+        const adminMessage = `🔔 *NEW WITHDRAWAL REQUEST* 🔔\n\n👤 *User:* ${username}\n💰 *Amount:* ₦${amount}\n💵 *Remaining Balance:* ₦${balance}\n⏱️ *Request Time:* ${new Date().toLocaleString()}\n\n✅ Request has been automatically forwarded to this channel.`;
         
         // Forward to admin groups
         for (const groupId of adminGroups) {
@@ -323,8 +330,9 @@ export class TelegramBotService {
             await this.bot.sendMessage(groupId, adminMessage, {
               parse_mode: 'Markdown',
             });
+            console.log(`[telegram-bot] Successfully forwarded withdrawal request for ₦${amount} from ${username} to group ${groupId}`);
           } catch (err) {
-            console.error(`Failed to forward withdrawal to group ${groupId}:`, err);
+            console.error(`[telegram-bot] Failed to forward withdrawal to group ${groupId}:`, err);
           }
         }
       }

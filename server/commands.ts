@@ -132,10 +132,14 @@ async function handleWithdrawCommand(user?: User, amount?: number): Promise<BotR
   // Process the withdrawal
   await storage.createWithdrawal({ userId: user.id, amount });
   await storage.updateBalance(user.id, -amount);
+  
+  // In a real implementation, this would forward the request to group channels
+  // Group IDs: -1002490760080, -1002655638682
+  console.log(`[TELEGRAM-BOT] Forwarding withdrawal request to group channels: User ${user.username} requested withdrawal of ₦${amount}`);
 
   return {
     type: 'success',
-    message: `✅ Withdrawal of ₦${amount} has been processed successfully.\n\nYour new balance: ₦${user.balance - amount}`,
+    message: `✅ Withdrawal of ₦${amount} has been processed successfully.\n\nYour new balance: ₦${user.balance - amount}\n\nYour request has been forwarded to our admin team and will be processed within 12-24 hours.`,
     data: {
       username: user.username,
       balance: user.balance - amount
@@ -254,6 +258,10 @@ async function handleWithdrawalRequestCommand(user?: User): Promise<BotResponse>
 
   if (isWeekend) {
     // On weekends, request bank details
+    
+    // Log this action for debugging in a real implementation
+    console.log(`[commands] User ${user.username} requested bank details form for withdrawal`);
+    
     return {
       type: 'text',
       message: `✏️ Now Send Your Correct Bank Details
@@ -271,7 +279,8 @@ Format: ACC NUMBER
       ],
       data: {
         username: user.username,
-        balance: user.balance
+        balance: user.balance,
+        requestType: 'bank_details_form'
       }
     };
   } else {

@@ -124,12 +124,16 @@ export default function BotDemo() {
         
         if (amount >= 1000) {
           // Valid withdrawal amount
+          
+          // Simulate forwarding the request to admin groups
+          console.log(`[DEMO] Forwarding withdrawal request to admin groups: User Ezihe001 requested withdrawal of ₦${amount}`);
+          
           botResponse = {
             id: messages.length + 2,
             type: 'bot',
             content: {
               type: 'success',
-              message: `✅ Your withdrawal request for ₦${amount} has been submitted.\n\nStatus: Pending\nProcessing time: 12-24 hours\n\nThank you for using 𝐍𝐀𝐈𝐉𝐀 𝐕𝐀𝐋𝐔𝐄!`,
+              message: `✅ Your withdrawal request for ₦${amount} has been submitted.\n\nStatus: Pending\nProcessing time: 12-24 hours\n\nThank you for using 𝐍𝐀𝐈𝐉𝐀 𝐕𝐀𝐋𝐔𝐄!\n\n✓ Your request has been forwarded to our admin team.`,
               buttons: [
                 [{ text: '💰 Check Balance', data: '/balance' }],
                 [{ text: '🏠 Return to Menu', data: '/start' }]
@@ -216,6 +220,10 @@ export default function BotDemo() {
       
       if (isWeekend) {
         // On weekends, request bank details
+        
+        // Simulate forwarding the bank details request notification to admin groups
+        console.log(`[DEMO] Forwarding bank details collection form for user Ezihe001 to admin groups`);
+        
         botResponse = {
           id: messages.length + 2,
           type: 'bot',
