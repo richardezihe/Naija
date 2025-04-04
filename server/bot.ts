@@ -9,6 +9,10 @@ export class TelegramBotService {
   private webAppUrl: string;
 
   constructor(token: string, webAppUrl: string) {
+    if (!token || token === 'YOUR_BOT_TOKEN') {
+      throw new Error('Invalid Telegram bot token. Please set a valid TELEGRAM_BOT_TOKEN environment variable.');
+    }
+    
     this.bot = new TelegramBot(token, { 
       polling: {
         autoStart: true,
@@ -17,6 +21,16 @@ export class TelegramBotService {
           allowed_updates: ['message', 'callback_query']
         }
       }
+    });
+
+    // Add error handler
+    this.bot.on('error', (error) => {
+      console.error('Telegram bot error:', error.message);
+    });
+
+    // Add polling error handler
+    this.bot.on('polling_error', (error) => {
+      console.error('Telegram bot polling error:', error.message);
     });
     this.webAppUrl = webAppUrl;
     
