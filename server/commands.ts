@@ -223,7 +223,7 @@ async function handlePaymentMethodCommand(user?: User): Promise<BotResponse> {
   };
 }
 
-// Store last bonus claim time for each user
+// Store last bonus claim time for each user in memory
 const lastBonusClaim = new Map<number, number>();
 
 async function handleEarnBonusCommand(user?: User): Promise<BotResponse> {
@@ -237,9 +237,10 @@ async function handleEarnBonusCommand(user?: User): Promise<BotResponse> {
   const now = Date.now();
   const lastClaim = lastBonusClaim.get(user.id) || 0;
   const timeDiff = now - lastClaim;
-  const timeLeft = Math.ceil((60000 - timeDiff) / 1000); // Convert to seconds
+  const COOLDOWN = 60000; // 1 minute cooldown in milliseconds
 
-  if (timeDiff < 60000) { // 1 minute in milliseconds
+  if (timeDiff < COOLDOWN) {
+    const timeLeft = Math.ceil((COOLDOWN - timeDiff) / 1000); // Convert to seconds
     return {
       type: 'error',
       message: `⏳ Please wait ${timeLeft} seconds before claiming another bonus.\n\nCurrent Balance: ₦${user.balance}`,
@@ -249,11 +250,11 @@ async function handleEarnBonusCommand(user?: User): Promise<BotResponse> {
       ]
     };
   }
-  
-  // Add 100 naira bonus
-  await storage.updateBalance(user.id, 100);
+
+  // Add 100 naira bonus and update last claim time
+  const updatedUser = await storage.updateBalance(user.id, 100);
   lastBonusClaim.set(user.id, now);
-  
+
   return {
     type: 'success',
     message: `✅ Bonus Added Successfully!\n\n+₦100 has been added to your balance.\n\nNew Balance: ₦${user.balance + 100}\n\nYou can earn again in 1 minute.`,
