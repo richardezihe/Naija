@@ -9,7 +9,15 @@ export class TelegramBotService {
   private webAppUrl: string;
 
   constructor(token: string, webAppUrl: string) {
-    this.bot = new TelegramBot(token, { polling: true });
+    this.bot = new TelegramBot(token, { 
+      polling: {
+        autoStart: true,
+        params: {
+          timeout: 10,
+          allowed_updates: ['message', 'callback_query']
+        }
+      }
+    });
     this.webAppUrl = webAppUrl;
     
     this.setupCommandHandlers();
