@@ -27,6 +27,11 @@ export async function processCommand(command: BotCommand, user?: User): Promise<
       return handleWithdrawalRequestCommand(user);
     case 'earn_bonus':
       return handleEarnBonusCommand(user);
+    case 'tour_1':
+    case 'tour_2':
+    case 'tour_3':
+    case 'tour_4':
+      return handleTourCommand(parseInt(command.type.substring(5)), user); //Added to handle tour commands
     default:
       return { 
         type: 'error', 
@@ -254,12 +259,11 @@ async function handleJoinedCommand(user?: User): Promise<BotResponse> {
 
   return {
     type: 'text',
-    message: '✨ Welcome to 𝐍𝐀𝐈𝐉𝐀 𝐕𝐀𝐋𝐔𝐄 Bot ✨\n\nMake money by referring new members to our community! 💰\n\nWhat We Offer:\n• Earn ₦1000 for each referral\n• Weekend withdrawals\n• Real-time tracking\n• 24/7 automated system\n\nStart earning today! 💰\nUse the buttons below to navigate:',
+    message: '🌟 Welcome to 𝐍𝐀𝐈𝐉𝐀 𝐕𝐀𝐋𝐔𝐄 Bot! 🌟\n\nLet me guide you through our amazing features:\n\n1️⃣ Earn Money 💰\n• ₦1000 per referral\n• Weekend withdrawals\n• Real-time tracking\n• 24/7 automated system\n\n2️⃣ Available Commands:\n• /balance - Check earnings 💰\n• /stats - View performance 📊\n• /refer - Get referral link 🔗\n• /withdraw - Cash out 💳\n• /payment_info - Payment details 💵\n• /earn_bonus - Get bonus every minute! 🎁\n\nReady to start? Click below! 👇',
     buttons: [
-      [{ text: '💰 Balance', data: '/balance' }, { text: '💳 Withdraw', data: '/withdraw' }],
-      [{ text: '🔗 Invite Friends', data: '/refer' }, { text: '📊 Stats', data: '/stats' }],
-      [{ text: '💵 Payment Info', data: '/payment_info' }, { text: '💳 Payment Method', data: '/payment_method' }],
-      [{ text: '📝 Withdrawal Request', data: '/withdrawal_request' }, { text: '📣 Join Channel', url: 'https://t.me/naijavalueofficial' }]
+      [{ text: '🎯 Start Interactive Tour', data: '/tour_1' }],
+      [{ text: '💰 Check Balance', data: '/balance' }],
+      [{ text: '🔗 Start Earning', data: '/refer' }]
     ]
   };
 }
