@@ -14,6 +14,22 @@ export class TelegramBotService {
     
     this.setupCommandHandlers();
     this.setupCallbackQueryHandler();
+
+    // Handle earn bonus command
+    this.bot.onText(/\/earn_bonus/, async (msg) => {
+      const user = await this.getUserFromMessage(msg);
+      const command = { type: 'earn_bonus' as const };
+      
+      // Check if user needs to verify first
+      if (await this.shouldRedirectToVerification(command, user)) {
+        const verificationResponse = await processCommand({ type: 'start' }, user);
+        await this.sendBotResponse(msg.chat.id, verificationResponse);
+        return;
+      }
+      
+      const response = await processCommand(command, user);
+      await this.sendBotResponse(msg.chat.id, response);
+    });
     
     log('Telegram bot service started', 'telegram-bot');
   }

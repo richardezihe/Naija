@@ -132,7 +132,7 @@ async function handleWithdrawCommand(user?: User, amount?: number): Promise<BotR
   // Process the withdrawal
   await storage.createWithdrawal({ userId: user.id, amount });
   await storage.updateBalance(user.id, -amount);
-  
+
   // In a real implementation, this would forward the request to group channels
   // Group IDs: -1002490760080, -1002655638682
   console.log(`[TELEGRAM-BOT] Forwarding withdrawal request to group channels: User ${user.username} requested withdrawal of ₦${amount}`);
@@ -167,12 +167,12 @@ async function handleJoinedCommand(user?: User): Promise<BotResponse> {
       message: 'Please use /start to register first.'
     };
   }
-  
+
   // Mark user as verified
   // In a real implementation, this would check with Telegram API if user has joined channels
   // For this implementation, we'll assume they have if they click the verification button
   await storage.updateVerificationStatus(user.id, true);
-  
+
   return {
     type: 'text',
     message: '✨ Welcome to 𝐍𝐀𝐈𝐉𝐀 𝐕𝐀𝐋𝐔𝐄 Bot ✨\n\nMake money by referring new members to our community! 💰\n\nWhat We Offer:\n• Earn ₦1000 for each referral\n• Weekend withdrawals\n• Real-time tracking\n• 24/7 automated system\n\nStart earning today! 💰\nUse the buttons below to navigate:',
@@ -237,10 +237,9 @@ async function handleEarnBonusCommand(user?: User): Promise<BotResponse> {
   const now = Date.now();
   const lastClaim = lastBonusClaim.get(user.id) || 0;
   const timeDiff = now - lastClaim;
-  const COOLDOWN = 60000; // 1 minute cooldown in milliseconds
+  const timeLeft = Math.ceil((60000 - timeDiff) / 1000); // Convert to seconds
 
-  if (timeDiff < COOLDOWN) {
-    const timeLeft = Math.ceil((COOLDOWN - timeDiff) / 1000); // Convert to seconds
+  if (timeDiff < 60000) { // 1 minute cooldown
     return {
       type: 'error',
       message: `⏳ Please wait ${timeLeft} seconds before claiming another bonus.\n\nCurrent Balance: ₦${user.balance}`,
@@ -279,10 +278,10 @@ async function handleWithdrawalRequestCommand(user?: User): Promise<BotResponse>
 
   if (isWeekend) {
     // On weekends, request bank details
-    
+
     // Log this action for debugging in a real implementation
     console.log(`[commands] User ${user.username} requested bank details form for withdrawal`);
-    
+
     return {
       type: 'text',
       message: `✏️ Now Send Your Correct Bank Details
@@ -325,14 +324,14 @@ We advise you to keep tapping and inviting friends to earn more cash.`,
 export async function registerUser(telegramId: string, username: string, referralCode?: string): Promise<User> {
   // Check if user exists
   let user = await storage.getUserByTelegramId(telegramId);
-  
+
   if (user) {
     return user;
   }
 
   // Generate a unique referral code
   const newReferralCode = MemStorage.generateReferralCode();
-  
+
   const userData: InsertUser = {
     username,
     telegramId,
@@ -342,7 +341,7 @@ export async function registerUser(telegramId: string, username: string, referra
 
   // Create new user
   user = await storage.createUser(userData);
-  
+
   // If referred by someone, update the referrer's stats
   if (referralCode) {
     const referrer = await storage.getUserByReferralCode(referralCode);
@@ -351,6 +350,6 @@ export async function registerUser(telegramId: string, username: string, referra
       await storage.updateBalance(referrer.id, EARNINGS_PER_REFERRAL);
     }
   }
-  
+
   return user;
 }
