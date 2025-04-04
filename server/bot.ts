@@ -12,7 +12,7 @@ export class TelegramBotService {
     if (!token || token === 'YOUR_BOT_TOKEN') {
       throw new Error('Invalid Telegram bot token. Please set a valid TELEGRAM_BOT_TOKEN environment variable.');
     }
-    
+
     this.bot = new TelegramBot(token, { 
       polling: {
         autoStart: true,
@@ -32,52 +32,32 @@ export class TelegramBotService {
     this.bot.on('polling_error', (error) => {
       console.error('Telegram bot polling error:', error.message);
     });
+
     this.webAppUrl = webAppUrl;
-    
+
     this.setupCommandHandlers();
     this.setupCallbackQueryHandler();
 
-    // Handle earn bonus command
-    this.bot.onText(/\/earn_bonus/, async (msg) => {
-      const user = await this.getUserFromMessage(msg);
-      const command = { type: 'earn_bonus' as const };
-      
-      // Check if user needs to verify first
-      if (await this.shouldRedirectToVerification(command, user)) {
-        const verificationResponse = await processCommand({ type: 'start' }, user);
-        await this.sendBotResponse(msg.chat.id, verificationResponse);
-        return;
-      }
-      
-      const response = await processCommand(command, user);
-      await this.sendBotResponse(msg.chat.id, response);
-    });
-    
     log('Telegram bot service started', 'telegram-bot');
   }
 
   private async getUserFromMessage(msg: TelegramBot.Message): Promise<User | undefined> {
     if (!msg.from) return undefined;
-    
+
     const telegramId = msg.from.id.toString();
     const user = await storage.getUserByTelegramId(telegramId);
-    
+
     return user;
   }
-  
-  // Helper function to check if a command is allowed without verification
+
   private isCommandAllowedWithoutVerification(command: BotCommand): boolean {
     return command.type === 'start' || command.type === 'joined';
   }
-  
-  // Method to redirect user to verification if needed
+
   private async shouldRedirectToVerification(command: BotCommand, user?: User): Promise<boolean> {
-    // If command is allowed without verification, no need to redirect
     if (this.isCommandAllowedWithoutVerification(command)) {
       return false;
     }
-    
-    // If user doesn't exist or isn't verified, redirect to verification
     return !user || !user.isVerified;
   }
 
@@ -297,105 +277,76 @@ export class TelegramBotService {
   }
 
   private setupCallbackQueryHandler() {
-    // Handle callback queries from inline buttons
     this.bot.on('callback_query', async (query) => {
       if (!query.data || !query.message) return;
-      
-      const chatId = query.message.chat.id;
-      const data = query.data;
-      const user = query.from?.id ? 
-        await storage.getUserByTelegramId(query.from.id.toString()) : 
-        undefined;
-      
-      let command: BotCommand | undefined;
-      
-      // Parse command from callback data
-      if (data.startsWith('/balance')) {
-        command = { type: 'balance' };
-      } else if (data.startsWith('/stats')) {
-        command = { type: 'stats' };
-      } else if (data.startsWith('/refer')) {
-        command = { type: 'refer' };
-      } else if (data.startsWith('/withdraw')) {
-        const match = data.match(/\/withdraw(?:\s+(\d+))?/);
-        const amount = match?.[1] ? parseInt(match[1]) : 0;
-        command = { type: 'withdraw', amount };
-      } else if (data.startsWith('/joined')) {
-        command = { type: 'joined' };
-      } else if (data.startsWith('/help')) {
-        command = { type: 'help' };
-      } else if (data.startsWith('/start')) {
-        const match = data.match(/\/start(?:\s+(.+))?/);
-        command = { type: 'start', referralCode: match?.[1] };
-      } else if (data.startsWith('/payment_info')) {
-        command = { type: 'payment_info' };
-      } else if (data.startsWith('/payment_method')) {
-        command = { type: 'payment_method' };
-      } else if (data.startsWith('/withdrawal_request')) {
-        command = { type: 'withdrawal_request' };
-      }
-      
-      if (command) {
-        // Check if user needs to verify first (except for allowed commands)
-        if (await this.shouldRedirectToVerification(command, user)) {
-          const verificationResponse = await processCommand({ type: 'start' }, user);
-          await this.sendBotResponse(chatId, verificationResponse);
-          
-          // Answer callback query to remove loading state
-          await this.bot.answerCallbackQuery(query.id);
-          return;
+
+      try {
+        const chatId = query.message.chat.id;
+        const data = query.data;
+        const user = query.from?.id ? 
+          await storage.getUserByTelegramId(query.from.id.toString()) : 
+          undefined;
+
+        let command: BotCommand | undefined;
+
+        // Parse command from callback data
+        if (data.startsWith('/balance')) {
+          command = { type: 'balance' };
+        } else if (data.startsWith('/stats')) {
+          command = { type: 'stats' };
+        } else if (data.startsWith('/refer')) {
+          command = { type: 'refer' };
+        } else if (data.startsWith('/withdraw')) {
+          const match = data.match(/\/withdraw(?:\s+(\d+))?/);
+          const amount = match?.[1] ? parseInt(match[1]) : 0;
+          command = { type: 'withdraw', amount };
+        } else if (data.startsWith('/joined')) {
+          command = { type: 'joined' };
+        } else if (data.startsWith('/help')) {
+          command = { type: 'help' };
+        } else if (data.startsWith('/start')) {
+          const match = data.match(/\/start(?:\s+(.+))?/);
+          command = { type: 'start', referralCode: match?.[1] };
+        } else if (data.startsWith('/payment_info')) {
+          command = { type: 'payment_info' };
+        } else if (data.startsWith('/payment_method')) {
+          command = { type: 'payment_method' };
+        } else if (data.startsWith('/withdrawal_request')) {
+          command = { type: 'withdrawal_request' };
+        } else if (data.startsWith('/earn_bonus')) {
+          command = { type: 'earn_bonus' };
         }
-        
-        const response = await processCommand(command, user);
-        await this.sendBotResponse(chatId, response);
-        
-        // Answer callback query to remove loading state
+
+        if (command) {
+          // Check if user needs to verify first
+          if (await this.shouldRedirectToVerification(command, user)) {
+            const verificationResponse = await processCommand({ type: 'start' }, user);
+            await this.sendBotResponse(chatId, verificationResponse);
+          } else {
+            const response = await processCommand(command, user);
+            await this.sendBotResponse(chatId, response);
+          }
+        }
+
+        // Always answer callback query to remove loading state
         await this.bot.answerCallbackQuery(query.id);
+      } catch (error) {
+        console.error('Error handling callback query:', error);
+        // Try to answer callback query even if there was an error
+        try {
+          await this.bot.answerCallbackQuery(query.id);
+        } catch (err) {
+          console.error('Error answering callback query:', err);
+        }
       }
     });
   }
 
   private async sendBotResponse(chatId: number, response: any) {
     try {
-      // Special handling for withdrawal success or withdrawal request
-      if ((response.type === 'success' && response.message.includes('Withdrawal of')) || 
-          (response.type === 'success' && response.message.includes('withdrawal request')) ||
-          (response.message && response.message.includes('Withdrawal Request Form')) ||
-          (response.data?.requestType === 'bank_details_form')) {
-        
-        // Forward withdrawal request to admin groups
-        const adminGroups = ['-1002490760080', '-1002655638682'];
-        const username = response.data?.username || "Unknown user";
-        const balance = response.data?.balance || 0;
-        let amount;
-        if (response.type === 'success' && response.message.includes('₦')) {
-          amount = response.message.match(/₦(\d+)/)?.[1] || "unknown amount";
-        } else if (response.data?.requestType === 'bank_details_form') {
-          amount = "Bank details requested";
-        } else {
-          amount = "Form requested";
-        }
-        
-        const adminMessage = `🔔 *NEW WITHDRAWAL REQUEST* 🔔\n\n👤 *User:* ${username}\n💰 *Amount:* ₦${amount}\n💵 *Remaining Balance:* ₦${balance}\n⏱️ *Request Time:* ${new Date().toLocaleString()}\n\n✅ Request has been automatically forwarded to this channel.`;
-        
-        // Forward to admin groups
-        for (const groupId of adminGroups) {
-          try {
-            await this.bot.sendMessage(groupId, adminMessage, {
-              parse_mode: 'Markdown',
-            });
-            console.log(`[telegram-bot] Successfully forwarded withdrawal request for ₦${amount} from ${username} to group ${groupId}`);
-          } catch (err) {
-            console.error(`[telegram-bot] Failed to forward withdrawal to group ${groupId}:`, err);
-          }
-        }
-      }
-      
-      // Send response to user
       if (response.buttons) {
-        // Create inline keyboard markup
-        const inlineKeyboard = response.buttons.map(row => 
-          row.map(btn => {
+        const inlineKeyboard = response.buttons.map((row: any) => 
+          row.map((btn: any) => {
             if (btn.url) {
               return { text: btn.text, url: btn.url };
             } else {
@@ -403,7 +354,7 @@ export class TelegramBotService {
             }
           })
         );
-        
+
         await this.bot.sendMessage(chatId, response.message, {
           parse_mode: 'HTML',
           reply_markup: {
@@ -421,8 +372,7 @@ export class TelegramBotService {
     }
   }
 
-  // Method to get the web app URL
-  getWebAppUrl(): string {
+  public getWebAppUrl(): string {
     return this.webAppUrl;
   }
 }
