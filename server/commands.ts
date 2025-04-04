@@ -51,16 +51,70 @@ async function handleStartCommand(referralCode?: string, existingUser?: User): P
     };
   }
 
-  // For verified users, show welcome message with commands
+  // For verified users, show welcome message with tour option
   return {
     type: 'text',
-    message: '✨ Welcome to 𝐍𝐀𝐈𝐉𝐀 𝐕𝐀𝐋𝐔𝐄 Bot ✨\n\nMake money by referring new members to our community! 💰\n\nWhat We Offer:\n• Earn ₦1000 for each referral\n• Weekend withdrawals\n• Real-time tracking\n• 24/7 automated system\n\nStart earning today! 💰',
+    message: '✨ Welcome to 𝐍𝐀𝐈𝐉𝐀 𝐕𝐀𝐋𝐔𝐄 Bot ✨\n\nMake money by referring new members to our community! 💰\n\nWhat We Offer:\n• Earn ₦1000 for each referral\n• Weekend withdrawals\n• Real-time tracking\n• 24/7 automated system\n\nWould you like a quick tour of our features? 🎯',
     buttons: [
+      [{ text: '🎯 Start Tour', data: '/tour_start' }],
       [{ text: '💰 Balance', data: '/balance' }, { text: '💳 Withdraw', data: '/withdraw' }],
       [{ text: '🔗 Invite Friends', data: '/refer' }, { text: '📊 Stats', data: '/stats' }],
       [{ text: '💵 Payment Info', data: '/payment_info' }, { text: '💳 Payment Method', data: '/payment_method' }]
     ]
   };
+}
+
+async function handleTourCommand(step: number = 1, user?: User): Promise<BotResponse> {
+  if (!user) {
+    return { 
+      type: 'error', 
+      message: 'You need to register first. Use /start to begin.' 
+    };
+  }
+
+  switch(step) {
+    case 1:
+      return {
+        type: 'text',
+        message: '1️⃣ Let\'s start with your Balance!\n\nClick the Balance button to check:\n• Your current earnings\n• Total referrals\n• Earnings per referral',
+        buttons: [
+          [{ text: '💰 Check Balance', data: '/balance' }],
+          [{ text: '➡️ Next Tip', data: '/tour_2' }],
+          [{ text: '❌ End Tour', data: '/start' }]
+        ]
+      };
+    case 2:
+      return {
+        type: 'text',
+        message: '2️⃣ Ready to earn? Let\'s invite friends!\n\nThe Invite Friends button will:\n• Generate your unique referral link\n• Track your referrals\n• Show your earnings',
+        buttons: [
+          [{ text: '🔗 Try Inviting', data: '/refer' }],
+          [{ text: '➡️ Next Tip', data: '/tour_3' }],
+          [{ text: '❌ End Tour', data: '/start' }]
+        ]
+      };
+    case 3:
+      return {
+        type: 'text',
+        message: '3️⃣ Time to get paid! 💰\n\nWithdrawals are processed on weekends.\nCheck Payment Info to see:\n• Available payment methods\n• Minimum withdrawal amount\n• Processing times',
+        buttons: [
+          [{ text: '💵 Payment Info', data: '/payment_info' }],
+          [{ text: '➡️ Next Tip', data: '/tour_4' }],
+          [{ text: '❌ End Tour', data: '/start' }]
+        ]
+      };
+    case 4:
+      return {
+        type: 'text',
+        message: '4️⃣ Track your success! 📊\n\nThe Stats button shows:\n• Your total referrals\n• Overall earnings\n• Current rank\n\nThat\'s it! You\'re ready to start earning! 🎉',
+        buttons: [
+          [{ text: '📊 View Stats', data: '/stats' }],
+          [{ text: '🏁 Finish Tour', data: '/start' }]
+        ]
+      };
+    default:
+      return handleStartCommand(undefined, user);
+  }
 }
 
 async function handleBalanceCommand(user?: User): Promise<BotResponse> {
