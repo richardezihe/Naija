@@ -51,17 +51,8 @@ async function handleStartCommand(referralCode?: string, existingUser?: User): P
     };
   }
 
-  // For verified users, show welcome message with tour option
-  return {
-    type: 'text',
-    message: '✨ Welcome to 𝐍𝐀𝐈𝐉𝐀 𝐕𝐀𝐋𝐔𝐄 Bot ✨\n\nMake money by referring new members to our community! 💰\n\nWhat We Offer:\n• Earn ₦1000 for each referral\n• Weekend withdrawals\n• Real-time tracking\n• 24/7 automated system\n\nWould you like a quick tour of our features? 🎯',
-    buttons: [
-      [{ text: '🎯 Start Tour', data: '/tour_start' }],
-      [{ text: '💰 Balance', data: '/balance' }, { text: '💳 Withdraw', data: '/withdraw' }],
-      [{ text: '🔗 Invite Friends', data: '/refer' }, { text: '📊 Stats', data: '/stats' }],
-      [{ text: '💵 Payment Info', data: '/payment_info' }, { text: '💳 Payment Method', data: '/payment_method' }]
-    ]
-  };
+  // Start tour automatically for verified users
+  return handleTourCommand(1, user);
 }
 
 async function handleTourCommand(step: number = 1, user?: User): Promise<BotResponse> {
@@ -76,40 +67,61 @@ async function handleTourCommand(step: number = 1, user?: User): Promise<BotResp
     case 1:
       return {
         type: 'text',
-        message: '✨ Welcome to Your Earnings Journey! ✨\n\n1️⃣ First Stop: Your Balance Dashboard 💫\n\n🎯 Click the Balance button to discover:\n• 💵 Your current earnings\n• 👥 Total referrals\n• 🌟 Earnings per referral\n\n💡 Pro Tip: Check your balance regularly!',
+        message: '🎉 Welcome to 𝐍𝐀𝐈𝐉𝐀 𝐕𝐀𝐋𝐔𝐄 Bot! 🎉\n\n' +
+                'Let me guide you through our amazing features! ✨\n\n' +
+                '1️⃣ First Stop: Balance & Earnings 💫\n\n' +
+                'Commands you\'ll love:\n' +
+                '• /balance - Check your current earnings 💰\n' +
+                '• /stats - View your performance 📊\n\n' +
+                '💡 Pro Tip: Monitor your earnings regularly!',
         buttons: [
-          [{ text: '💰 Check Balance', data: '/balance' }],
-          [{ text: '🚀 Next Adventure', data: '/tour_2' }],
-          [{ text: '🚪 Exit Tour', data: '/start' }]
+          [{ text: '💰 Try Balance', data: '/balance' }],
+          [{ text: '🎯 Continue Tour', data: '/tour_2' }]
         ]
       };
     case 2:
       return {
         type: 'text',
-        message: '🌟 Level Up Your Earnings! 🌟\n\n2️⃣ Unlock the Power of Referrals!\n\n✨ The Invite Friends feature gives you:\n• 🔮 Your magical referral link\n• 📈 Real-time referral tracking\n• 💎 Earnings dashboard\n\n💫 Start building your network!',
+        message: '2️⃣ Earning Through Referrals 🌟\n\n' +
+                'Essential commands:\n' +
+                '• /refer - Get your unique referral link 🔗\n' +
+                '• /earn_bonus - Claim bonus every minute! 🎁\n\n' +
+                '💫 Earn ₦1000 for each friend who joins!\n' +
+                '🔥 Share your link to start earning instantly!',
         buttons: [
-          [{ text: '🔗 Start Inviting', data: '/refer' }],
-          [{ text: '🚀 Next Discovery', data: '/tour_3' }],
-          [{ text: '🚪 Exit Tour', data: '/start' }]
+          [{ text: '🔗 Get Referral Link', data: '/refer' }],
+          [{ text: '🎯 Next Step', data: '/tour_3' }]
         ]
       };
     case 3:
       return {
         type: 'text',
-        message: '💫 Time to Collect Your Rewards! 💫\n\n3️⃣ Weekend Withdrawals Await!\n\n🎁 Important Details:\n• 🏦 Multiple payment methods\n• 💰 Minimum withdrawal info\n• ⏱️ Processing schedule\n\n✨ Get ready to cash out!',
+        message: '3️⃣ Withdrawing Your Earnings 💰\n\n' +
+                'Important commands:\n' +
+                '• /withdraw [amount] - Cash out your earnings 💳\n' +
+                '• /payment_info - View payment methods 🏦\n' +
+                '• /payment_method - Set up payment details ✍️\n\n' +
+                '⚡️ Quick Tips:\n' +
+                '• Withdrawals process on weekends\n' +
+                '• Minimum withdrawal: ₦1000',
         buttons: [
-          [{ text: '💵 Payment Details', data: '/payment_info' }],
-          [{ text: '🚀 Final Stop', data: '/tour_4' }],
-          [{ text: '🚪 Exit Tour', data: '/start' }]
+          [{ text: '💳 Payment Info', data: '/payment_info' }],
+          [{ text: '🎯 Final Step', data: '/tour_4' }]
         ]
       };
     case 4:
       return {
         type: 'text',
-        message: '🎉 Congratulations! You\'re Almost There! 🎉\n\n4️⃣ Your Success Dashboard\n\n📊 Track your journey:\n• 🌟 See your referral count\n• 💎 Total earnings display\n• 👑 Your awesome rank\n\n🎯 You\'re all set to become a top earner! 🚀\n\n✨ Start your earning adventure now! ✨',
+        message: '4️⃣ Extra Features & Help 🌈\n\n' +
+                'Useful commands:\n' +
+                '• /withdrawal_request - Request weekend withdrawal 📝\n' +
+                '• /help - See all available commands ℹ️\n\n' +
+                '🎉 You\'re all set! Ready to start earning?\n\n' +
+                'Here\'s your command center:',
         buttons: [
-          [{ text: '📊 View Stats', data: '/stats' }],
-          [{ text: '🎯 Start Earning', data: '/start' }]
+          [{ text: '💰 Balance', data: '/balance' }, { text: '💳 Withdraw', data: '/withdraw' }],
+          [{ text: '🔗 Invite Friends', data: '/refer' }, { text: '📊 Stats', data: '/stats' }],
+          [{ text: '💵 Payment Info', data: '/payment_info' }, { text: '💳 Payment Method', data: '/payment_method' }]
         ]
       };
     default:
