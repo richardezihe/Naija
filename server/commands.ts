@@ -36,16 +36,29 @@ export async function processCommand(command: BotCommand, user?: User): Promise<
 }
 
 async function handleStartCommand(referralCode?: string, existingUser?: User): Promise<BotResponse> {
-  // Always show the mandatory requirement message first
+  // Only show verification message for new or unverified users
+  if (!existingUser || !existingUser.isVerified) {
+    return {
+      type: 'warning',
+      message: '⚠️ MANDATORY REQUIREMENT ⚠️\n\nYou must join our channel and community group to use this bot.\n\nPlease use the buttons below to join, then click "✅ I\'ve Joined Both"',
+      buttons: [
+        [
+          { text: '📋 Join Channel', url: 'https://t.me/naijavalueofficial' },
+          { text: '👥 Join Community', url: 'https://t.me/naijavaluecommunity' }
+        ],
+        [{ text: '✅ I\'ve Joined Both', data: '/joined' }]
+      ]
+    };
+  }
+
+  // For verified users, show welcome message with commands
   return {
-    type: 'warning',
-    message: '⚠️ MANDATORY REQUIREMENT ⚠️\n\nYou must join our channel and community group to use this bot.\n\nPlease use the buttons below to join, then click "✅ I\'ve Joined Both"',
+    type: 'text',
+    message: '✨ Welcome to 𝐍𝐀𝐈𝐉𝐀 𝐕𝐀𝐋𝐔𝐄 Bot ✨\n\nMake money by referring new members to our community! 💰\n\nWhat We Offer:\n• Earn ₦1000 for each referral\n• Weekend withdrawals\n• Real-time tracking\n• 24/7 automated system\n\nStart earning today! 💰',
     buttons: [
-      [
-        { text: '📋 Join Channel', url: 'https://t.me/naijavalueofficial' },
-        { text: '👥 Join Community', url: 'https://t.me/naijavaluecommunity' }
-      ],
-      [{ text: '✅ I\'ve Joined Both', data: '/joined' }]
+      [{ text: '💰 Balance', data: '/balance' }, { text: '💳 Withdraw', data: '/withdraw' }],
+      [{ text: '🔗 Invite Friends', data: '/refer' }, { text: '📊 Stats', data: '/stats' }],
+      [{ text: '💵 Payment Info', data: '/payment_info' }, { text: '💳 Payment Method', data: '/payment_method' }]
     ]
   };
 }
