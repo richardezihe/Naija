@@ -223,6 +223,9 @@ async function handlePaymentMethodCommand(user?: User): Promise<BotResponse> {
   };
 }
 
+// Store last bonus claim time for each user
+const lastBonusClaim = new Map<number, number>();
+
 async function handleEarnBonusCommand(user?: User): Promise<BotResponse> {
   if (!user) {
     return { 
@@ -230,9 +233,26 @@ async function handleEarnBonusCommand(user?: User): Promise<BotResponse> {
       message: 'You need to register first. Use /start to begin.' 
     };
   }
+
+  const now = Date.now();
+  const lastClaim = lastBonusClaim.get(user.id) || 0;
+  const timeDiff = now - lastClaim;
+  const timeLeft = Math.ceil((60000 - timeDiff) / 1000); // Convert to seconds
+
+  if (timeDiff < 60000) { // 1 minute in milliseconds
+    return {
+      type: 'error',
+      message: `⏳ Please wait ${timeLeft} seconds before claiming another bonus.\n\nCurrent Balance: ₦${user.balance}`,
+      buttons: [
+        [{ text: '💰 Check Balance', data: '/balance' }],
+        [{ text: '🏠 Return to Menu', data: '/start' }]
+      ]
+    };
+  }
   
   // Add 100 naira bonus
   await storage.updateBalance(user.id, 100);
+  lastBonusClaim.set(user.id, now);
   
   return {
     type: 'success',
