@@ -51,8 +51,8 @@ async function handleStartCommand(referralCode?: string, existingUser?: User): P
     };
   }
 
-  // Start tour automatically for verified users
-  return handleTourCommand(1, user);
+  // Start tour automatically for verified users 
+  return handleTourCommand(1, existingUser);
 }
 
 async function handleTourCommand(step: number = 1, user?: User): Promise<BotResponse> {

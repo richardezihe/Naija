@@ -307,6 +307,11 @@ export class TelegramBotService {
         } else if (data.startsWith('/start')) {
           const match = data.match(/\/start(?:\s+(.+))?/);
           command = { type: 'start', referralCode: match?.[1] };
+          // Check if user exists before processing command
+          if (!user) {
+            await this.bot.answerCallbackQuery(query.id, { text: 'Please use /start to register first' });
+            return;
+          }
         } else if (data.startsWith('/payment_info')) {
           command = { type: 'payment_info' };
         } else if (data.startsWith('/payment_method')) {
