@@ -321,10 +321,7 @@ export class TelegramBotService {
         } else if (data.startsWith('/earn_bonus')) {
           command = { type: 'earn_bonus' };
         } else if (data.startsWith('/tour_')) {
-          const step = parseInt(data.replace('/tour_', '')) || 1;
-          const response = await handleTourCommand(step, user);
-          await this.sendBotResponse(chatId, response);
-          return;
+          command = { type: 'tour', step: parseInt(data.replace('/tour_', '')) || 1 };
         }
 
         if (command) {

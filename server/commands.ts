@@ -56,8 +56,17 @@ async function handleStartCommand(referralCode?: string, existingUser?: User): P
     };
   }
 
-  // Start tour automatically for verified users 
-  return handleTourCommand(1, existingUser);
+  // Return original welcome message for verified users
+  return {
+    type: 'text',
+    message: '✨ Welcome to 𝐍𝐀𝐈𝐉𝐀 𝐕𝐀𝐋𝐔𝐄 Bot ✨\n\nMake money by referring new members to our community! 💰\n\nWhat We Offer:\n• Earn ₦1000 for each referral\n• Weekend withdrawals\n• Real-time tracking\n• 24/7 automated system\n\nStart earning today! 💰\nUse the buttons below to navigate:',
+    buttons: [
+      [{ text: '💰 Balance', data: '/balance' }, { text: '💳 Withdraw', data: '/withdraw' }],
+      [{ text: '🔗 Invite Friends', data: '/refer' }, { text: '📊 Stats', data: '/stats' }],
+      [{ text: '💵 Payment Info', data: '/payment_info' }, { text: '💳 Payment Method', data: '/payment_method' }],
+      [{ text: '📝 Withdrawal Request', data: '/withdrawal_request' }, { text: '📣 Join Channel', url: 'https://t.me/naijavalueofficial' }]
+    ]
+  };
 }
 
 async function handleTourCommand(step: number = 1, user?: User): Promise<BotResponse> {
