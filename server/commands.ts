@@ -256,9 +256,10 @@ async function handleEarnBonusCommand(user?: User): Promise<BotResponse> {
 
   return {
     type: 'success',
-    message: `✅ Bonus Added Successfully!\n\n+₦100 has been added to your balance.\n\nNew Balance: ₦${user.balance + 100}\n\nYou can earn again in 1 minute.`,
+    message: `✅ Bonus Added Successfully!\n\n+₦100 has been added to your balance.\n\nNew Balance: ₦${updatedUser?.balance || user.balance + 100}\n\nYou can earn again in 1 minute! ⏱️`,
     buttons: [
       [{ text: '💰 Check Balance', data: '/balance' }],
+      [{ text: '🎁 Claim Again', data: '/earn_bonus' }],
       [{ text: '🏠 Return to Menu', data: '/start' }]
     ]
   };
