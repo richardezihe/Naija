@@ -76,40 +76,40 @@ async function handleTourCommand(step: number = 1, user?: User): Promise<BotResp
     case 1:
       return {
         type: 'text',
-        message: '1️⃣ Let\'s start with your Balance!\n\nClick the Balance button to check:\n• Your current earnings\n• Total referrals\n• Earnings per referral',
+        message: '✨ Welcome to Your Earnings Journey! ✨\n\n1️⃣ First Stop: Your Balance Dashboard 💫\n\n🎯 Click the Balance button to discover:\n• 💵 Your current earnings\n• 👥 Total referrals\n• 🌟 Earnings per referral\n\n💡 Pro Tip: Check your balance regularly!',
         buttons: [
           [{ text: '💰 Check Balance', data: '/balance' }],
-          [{ text: '➡️ Next Tip', data: '/tour_2' }],
-          [{ text: '❌ End Tour', data: '/start' }]
+          [{ text: '🚀 Next Adventure', data: '/tour_2' }],
+          [{ text: '🚪 Exit Tour', data: '/start' }]
         ]
       };
     case 2:
       return {
         type: 'text',
-        message: '2️⃣ Ready to earn? Let\'s invite friends!\n\nThe Invite Friends button will:\n• Generate your unique referral link\n• Track your referrals\n• Show your earnings',
+        message: '🌟 Level Up Your Earnings! 🌟\n\n2️⃣ Unlock the Power of Referrals!\n\n✨ The Invite Friends feature gives you:\n• 🔮 Your magical referral link\n• 📈 Real-time referral tracking\n• 💎 Earnings dashboard\n\n💫 Start building your network!',
         buttons: [
-          [{ text: '🔗 Try Inviting', data: '/refer' }],
-          [{ text: '➡️ Next Tip', data: '/tour_3' }],
-          [{ text: '❌ End Tour', data: '/start' }]
+          [{ text: '🔗 Start Inviting', data: '/refer' }],
+          [{ text: '🚀 Next Discovery', data: '/tour_3' }],
+          [{ text: '🚪 Exit Tour', data: '/start' }]
         ]
       };
     case 3:
       return {
         type: 'text',
-        message: '3️⃣ Time to get paid! 💰\n\nWithdrawals are processed on weekends.\nCheck Payment Info to see:\n• Available payment methods\n• Minimum withdrawal amount\n• Processing times',
+        message: '💫 Time to Collect Your Rewards! 💫\n\n3️⃣ Weekend Withdrawals Await!\n\n🎁 Important Details:\n• 🏦 Multiple payment methods\n• 💰 Minimum withdrawal info\n• ⏱️ Processing schedule\n\n✨ Get ready to cash out!',
         buttons: [
-          [{ text: '💵 Payment Info', data: '/payment_info' }],
-          [{ text: '➡️ Next Tip', data: '/tour_4' }],
-          [{ text: '❌ End Tour', data: '/start' }]
+          [{ text: '💵 Payment Details', data: '/payment_info' }],
+          [{ text: '🚀 Final Stop', data: '/tour_4' }],
+          [{ text: '🚪 Exit Tour', data: '/start' }]
         ]
       };
     case 4:
       return {
         type: 'text',
-        message: '4️⃣ Track your success! 📊\n\nThe Stats button shows:\n• Your total referrals\n• Overall earnings\n• Current rank\n\nThat\'s it! You\'re ready to start earning! 🎉',
+        message: '🎉 Congratulations! You\'re Almost There! 🎉\n\n4️⃣ Your Success Dashboard\n\n📊 Track your journey:\n• 🌟 See your referral count\n• 💎 Total earnings display\n• 👑 Your awesome rank\n\n🎯 You\'re all set to become a top earner! 🚀\n\n✨ Start your earning adventure now! ✨',
         buttons: [
           [{ text: '📊 View Stats', data: '/stats' }],
-          [{ text: '🏁 Finish Tour', data: '/start' }]
+          [{ text: '🎯 Start Earning', data: '/start' }]
         ]
       };
     default:

@@ -66,14 +66,14 @@ export class TelegramBotService {
     this.bot.onText(/\/earn_bonus/, async (msg) => {
       const user = await this.getUserFromMessage(msg);
       const command = { type: 'earn_bonus' as const };
-      
+
       // Check if user needs to verify first
       if (await this.shouldRedirectToVerification(command, user)) {
         const verificationResponse = await processCommand({ type: 'start' }, user);
         await this.sendBotResponse(msg.chat.id, verificationResponse);
         return;
       }
-      
+
       const response = await processCommand(command, user);
       await this.sendBotResponse(msg.chat.id, response);
     });
@@ -82,14 +82,14 @@ export class TelegramBotService {
     this.bot.onText(/\/payment_method/, async (msg) => {
       const user = await this.getUserFromMessage(msg);
       const command = { type: 'payment_method' as const };
-      
+
       // Check if user needs to verify first
       if (await this.shouldRedirectToVerification(command, user)) {
         const verificationResponse = await processCommand({ type: 'start' }, user);
         await this.sendBotResponse(msg.chat.id, verificationResponse);
         return;
       }
-      
+
       const response = await processCommand(command, user);
       await this.sendBotResponse(msg.chat.id, response);
     });
@@ -98,15 +98,15 @@ export class TelegramBotService {
       const telegramId = msg.from?.id.toString();
       const username = msg.from?.username || `user${msg.from?.id}`;
       const referralCode = match?.[1]; // Extract referral code if present
-      
+
       if (!telegramId) return;
-      
+
       // Register user if new
       const user = await registerUser(telegramId, username, referralCode);
-      
+
       // Always show join verification first
       const response = await processCommand({ type: 'start', referralCode }, user);
-      
+
       // Send response
       await this.sendBotResponse(msg.chat.id, response);
     });
@@ -115,14 +115,14 @@ export class TelegramBotService {
     this.bot.onText(/\/balance/, async (msg) => {
       const user = await this.getUserFromMessage(msg);
       const command = { type: 'balance' as const };
-      
+
       // Check if user needs to verify first
       if (await this.shouldRedirectToVerification(command, user)) {
         const verificationResponse = await processCommand({ type: 'start' }, user);
         await this.sendBotResponse(msg.chat.id, verificationResponse);
         return;
       }
-      
+
       const response = await processCommand(command, user);
       await this.sendBotResponse(msg.chat.id, response);
     });
@@ -131,14 +131,14 @@ export class TelegramBotService {
     this.bot.onText(/\/stats/, async (msg) => {
       const user = await this.getUserFromMessage(msg);
       const command = { type: 'stats' as const };
-      
+
       // Check if user needs to verify first
       if (await this.shouldRedirectToVerification(command, user)) {
         const verificationResponse = await processCommand({ type: 'start' }, user);
         await this.sendBotResponse(msg.chat.id, verificationResponse);
         return;
       }
-      
+
       const response = await processCommand(command, user);
       await this.sendBotResponse(msg.chat.id, response);
     });
@@ -147,14 +147,14 @@ export class TelegramBotService {
     this.bot.onText(/\/refer/, async (msg) => {
       const user = await this.getUserFromMessage(msg);
       const command = { type: 'refer' as const };
-      
+
       // Check if user needs to verify first
       if (await this.shouldRedirectToVerification(command, user)) {
         const verificationResponse = await processCommand({ type: 'start' }, user);
         await this.sendBotResponse(msg.chat.id, verificationResponse);
         return;
       }
-      
+
       const response = await processCommand(command, user);
       await this.sendBotResponse(msg.chat.id, response);
     });
@@ -164,14 +164,14 @@ export class TelegramBotService {
       const user = await this.getUserFromMessage(msg);
       const amount = match?.[1] ? parseInt(match[1]) : 0;
       const command = { type: 'withdraw' as const, amount };
-      
+
       // Check if user needs to verify first
       if (await this.shouldRedirectToVerification(command, user)) {
         const verificationResponse = await processCommand({ type: 'start' }, user);
         await this.sendBotResponse(msg.chat.id, verificationResponse);
         return;
       }
-      
+
       const response = await processCommand(command, user);
       await this.sendBotResponse(msg.chat.id, response);
     });
@@ -180,14 +180,14 @@ export class TelegramBotService {
     this.bot.onText(/\/help/, async (msg) => {
       const user = await this.getUserFromMessage(msg);
       const command = { type: 'help' as const };
-      
+
       // Check if user needs to verify first
       if (await this.shouldRedirectToVerification(command, user)) {
         const verificationResponse = await processCommand({ type: 'start' }, user);
         await this.sendBotResponse(msg.chat.id, verificationResponse);
         return;
       }
-      
+
       const response = await processCommand(command, user);
       await this.sendBotResponse(msg.chat.id, response);
     });
@@ -196,14 +196,14 @@ export class TelegramBotService {
     this.bot.onText(/\/payment_info/, async (msg) => {
       const user = await this.getUserFromMessage(msg);
       const command = { type: 'payment_info' as const };
-      
+
       // Check if user needs to verify first
       if (await this.shouldRedirectToVerification(command, user)) {
         const verificationResponse = await processCommand({ type: 'start' }, user);
         await this.sendBotResponse(msg.chat.id, verificationResponse);
         return;
       }
-      
+
       const response = await processCommand(command, user);
       await this.sendBotResponse(msg.chat.id, response);
     });
@@ -212,14 +212,14 @@ export class TelegramBotService {
     this.bot.onText(/\/withdrawal_request/, async (msg) => {
       const user = await this.getUserFromMessage(msg);
       const command = { type: 'withdrawal_request' as const };
-      
+
       // Check if user needs to verify first
       if (await this.shouldRedirectToVerification(command, user)) {
         const verificationResponse = await processCommand({ type: 'start' }, user);
         await this.sendBotResponse(msg.chat.id, verificationResponse);
         return;
       }
-      
+
       const response = await processCommand(command, user);
       await this.sendBotResponse(msg.chat.id, response);
     });
@@ -262,14 +262,14 @@ export class TelegramBotService {
 
       if (command) {
         const user = await this.getUserFromMessage(msg);
-        
+
         // Check if user needs to verify first (except for 'joined' command)
         if (await this.shouldRedirectToVerification(command, user)) {
           const verificationResponse = await processCommand({ type: 'start' }, user);
           await this.sendBotResponse(msg.chat.id, verificationResponse);
           return;
         }
-        
+
         const response = await processCommand(command, user);
         await this.sendBotResponse(msg.chat.id, response);
       }
@@ -329,12 +329,24 @@ export class TelegramBotService {
             await this.sendBotResponse(chatId, verificationResponse);
           } else {
             const response = await processCommand(command, user);
+
+            // Add animation for tour messages
+            if (query.data?.startsWith('/tour_')) {
+              // Delete previous message for smooth transition
+              if (query.message?.message_id) {
+                await this.bot.deleteMessage(chatId, query.message.message_id.toString());
+              }
+              // Send animated message
+              await this.bot.sendChatAction(chatId, 'typing');
+              await new Promise(resolve => setTimeout(resolve, 500));
+            }
+
             await this.sendBotResponse(chatId, response);
           }
         }
 
         // Always answer callback query to remove loading state
-        await this.bot.answerCallbackQuery(query.id);
+        await this.bot.answerCallbackQuery(query.id, { text: query.data?.startsWith('/tour_') ? '✨ Loading next step...' : undefined });
       } catch (error) {
         console.error('Error handling callback query:', error);
         // Try to answer callback query even if there was an error
